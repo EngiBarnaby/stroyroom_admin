@@ -24,13 +24,13 @@
     </v-row>
 
     <v-data-table
-        :items="shops"
+        :items="nomenclatures"
         :headers="tableHeaders"
         disable-pagination
         hide-default-header
         :hide-default-footer="true"
         class="elevation-1 table-bordered"
-        @dblclick:row="goListProductsShop"
+        @dblclick:row="goToEditNomenclature"
     >
 
       <template v-slot:header="{ props }">
@@ -48,7 +48,7 @@
           v-model="page"
           :length="length"
           :total-visible="7"
-          @input="fetchShops"
+          @input="fetchData"
       ></v-pagination>
     </div>
 
@@ -58,20 +58,17 @@
 <script>
 export default {
   // eslint-disable-next-line vue/multi-word-component-names
-  name: "Shops",
+  name: "Nomenclatures",
 
   data(){
     return {
-      shops : [],
-
+      nomenclatures : [],
       tableHeaders : [
         { text: "ID", value: "id"},
-        { text: "Город", value: "_city" },
-        { text: "Компания", value: "_company" },
-        { text: "Адрес", value: "address" },
+        { text: "Название", value: "name" },
         {text: "Описание", value : "description"},
+        {text : "Категория", value : "_category"}
       ],
-
       page : 1,
       psz : 50,
       quantity : [10, 20, 30, 40, 50],
@@ -83,23 +80,18 @@ export default {
 
   methods : {
 
-    goListProductsShop(e, { item }) {
-      this.$router.push({ name: "shop-products", params: { id: item.id } });
+    goToEditNomenclature(e, { item }) {
+      this.$router.push({ name: "edit-nomenclature", params: { id: item.id } });
     },
 
     onSearch(){
-      this.fetchShops()
+      this.fetchData()
     },
 
-    async fetchShops(){
-      try {
-        let {data} = await this.$http.get(`marketplace/shop/?psz=${this.psz}&page=${this.page}&search=${this.search}`)
-        this.count = data.count
-        this.shops = data.results
-      }
-      catch (e) {
-        console.log(e)
-      }
+    async fetchData(){
+      let {data} = await this.$http.get(`marketplace/nomenclature_manager/?psz=${this.psz}&page=${this.page}&search=${this.search}`)
+      this.count = data.count
+      this.nomenclatures = data.results
     }
   },
 
@@ -110,9 +102,8 @@ export default {
   },
 
   mounted() {
-    this.fetchShops()
+    this.fetchData()
   }
-
 }
 </script>
 

@@ -14,14 +14,25 @@ const routes = [
     component: () => import("../views/Main"),
     children : [
       {
-        path: '/',
-        name: 'nomenclature',
-        component: () => import('../views/Homenclatures/Nomenclatures')
+        path: '/nomenclatures',
+        name: 'nomenclatures',
+        component: () => import('../views/Nomenclatures/Nomenclatures')
       },
       {
-        path: '/about',
-        name: 'about',
-        component: () => import('../views/Home/AboutView.vue')
+        path : "/edit-nomenclature/:id",
+        name : "edit-nomenclature",
+        component : () => import('../views/Nomenclatures/NomenclatureDetails')
+
+      },
+      {
+        path: '/shops',
+        name: 'shops',
+        component: () => import('../views/Shops/Shops')
+      },
+      {
+        path : "/shop-products/:id",
+        name : "shop-products",
+        component: () => import("../views/Shops/ShopProducts")
       },
     ]
   }
