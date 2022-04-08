@@ -35,12 +35,12 @@ export default {
       checkup : {},
 
       mainList : [
-        {name : "Заказы", icon : "mdi-briefcase-clock-outline", link : "/projects",},
+        {name : "Заказы", icon : "mdi-cart-outline", link : "/orders", "key" : "orders"},
         {name : "Магазины", icon : "mdi-format-list-checks", link : "/kanban"},
-        {name : "Номенклатура", icon : "mdi-cash-multiple", link : "/nomenclatures", "key" : "nomenclature"},
+        {name : "Номенклатура", icon : "mdi-clipboard-list-outline", link : "/nomenclatures", "key" : "nomenclature"},
         {name : "Сборки", icon : "mdi-clock", link : "/actions"},
-        {name : "Магазины", icon : "mdi-archive-outline", link : "/shops", "key" : "shops"},
-        { name : "Мои заказы", icon : "mdi-book-account", link : "/contacts"},
+        {name : "Магазины", icon : "mdi-store", link : "/shops", "key" : "shops"},
+        {name : "Мои заказы", icon : "mdi-book-account", link : "/contacts", "key" : "my_orders"},
       ],
     }
   },
@@ -49,6 +49,7 @@ export default {
    async getCheckUp(){
     try{
       let {data} = await this.$http.get("marketplace/get_check_up/")
+      console.log(data)
       this.checkup = data
     }
     catch (e) {
@@ -67,8 +68,8 @@ export default {
     }
   },
 
-  mounted() {
-    this.getCheckUp()
+  async mounted() {
+    await this.getCheckUp()
   }
 
 }

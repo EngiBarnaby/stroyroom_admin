@@ -39,6 +39,11 @@ const routes = [
         component: () => import("../views/Shops/ShopProducts"),
         meta: { requiresAuth: true, },
       },
+      {
+        path : "/orders",
+        name : "orders",
+        component: () => import("../views/Orders/OrderTable")
+      }
     ]
   }
 ]

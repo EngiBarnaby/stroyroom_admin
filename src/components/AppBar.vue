@@ -12,12 +12,27 @@
       </h4>
     </div>
     <v-spacer></v-spacer>
+    <div>
+      <v-btn icon @click="logout">
+        <v-icon >
+          mdi-exit-to-app
+        </v-icon>
+      </v-btn>
+    </div>
   </v-app-bar>
 </template>
 
 <script>
 export default {
-  name: "AppBar"
+  name: "AppBar",
+
+  methods : {
+    logout(){
+      this.$store.commit("user/logout")
+      this.$router.push("/login")
+    },
+  }
+
 }
 </script>
 
