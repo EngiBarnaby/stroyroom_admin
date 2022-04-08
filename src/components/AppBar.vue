@@ -27,9 +27,9 @@ export default {
   name: "AppBar",
 
   methods : {
-    logout(){
-      this.$store.commit("user/logout")
-      this.$router.push("/login")
+    async logout(){
+     await localStorage.clear()
+     await this.$router.push("/login")
     },
   }
 

@@ -68,6 +68,8 @@
 </template>
 
 <script>
+import api from "@/plugins/axios";
+
 export default {
   name: "NomenclatureDetails",
 
@@ -83,23 +85,23 @@ export default {
 
   methods : {
     async fetchNomenclature(){
-      let { data } = await this.$http.get(`marketplace/nomenclature_manager/${this.$route.params.id}/`)
+      let { data } = await api(`marketplace/nomenclature_manager/${this.$route.params.id}/`)
       this.nomenclature = data
     },
 
     async fetchCategories(){
-      let {data} = await this.$http.get("marketplace/category/?opt")
+      let {data} = await api.get("marketplace/category/?opt")
       this.categories = data
     },
 
     async fetchMeasurements(){
-      let {data} = await this.$http.get("marketplace/measurement/?opt")
+      let {data} = await api("marketplace/measurement/?opt")
       this.measurements = data
     },
 
     async changeNomenclature(){
       try{
-        await this.$http.put(`marketplace/nomenclature_manager/${this.$route.params.id}/`, this.nomenclature)
+        await api.put(`marketplace/nomenclature_manager/${this.$route.params.id}/`, this.nomenclature)
         this.snackbar = true
       }
       catch (e) {

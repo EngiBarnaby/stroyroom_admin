@@ -1,7 +1,7 @@
 import axios from "axios";
 import router from "@/router/index.js"
 
-const axiosInstance = axios.create({
+const api  = axios.create({
     baseURL : "http://dev1.itpw.ru:8005/",
     // baseURL : "http://127.0.0.1:8000/",
     headers : {
@@ -10,20 +10,10 @@ const axiosInstance = axios.create({
 })
 
 
-axiosInstance.interceptors.response.use(
-    response => {
-        return response
-    },
-    error => {
-
-        if(error.response.status === 401){
-            console.log("Error iterseptor. Code 401");
-            router.push("/login")
-        }
-        else{
-            return error
-        }
+api.interceptors.response.use(undefined, (error) => {
+    if (error.response && error.response.status === 401) {
+        router.push({path:'login'})
     }
-)
 
-export default axiosInstance
+});
+export default api

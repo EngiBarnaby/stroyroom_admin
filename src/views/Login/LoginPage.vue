@@ -28,7 +28,7 @@
                 elevation="2"
                 outlined
                 type="submit"
-                color="white"
+                color="blue"
             >
               Войти
             </v-btn>
@@ -39,7 +39,8 @@
 </template>
 
 <script>
-import axios from "@/plugins/axios/index.js";
+import api from "@/plugins/axios";
+
 export default {
   name: "LoginPage",
 
@@ -52,7 +53,7 @@ export default {
 
   methods : {
     async login(){
-      axios.post('accounts/auth/auth/',{
+      api.post('accounts/auth/auth/',{
         username : this.username,
         password : this.password
       })
@@ -60,9 +61,11 @@ export default {
         if(response.status === 200) {
           localStorage.setItem("token", response.data.token)
           this.$store.commit('user/setUserData', response.data)
-          this.$router.push("/")
         }
       })
+          .then(()=>{
+            this.$router.go(0)
+          })
       .catch((e)=>{
         console.error(e)
       })
@@ -83,6 +86,8 @@ export default {
    //     console.log(error)
    //   }
     },
+  },
+  mounted() {
   }
 
 }

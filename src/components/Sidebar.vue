@@ -25,6 +25,8 @@
 </template>
 
 <script>
+import api from "@/plugins/axios";
+
 export default {
   // eslint-disable-next-line vue/multi-word-component-names
   name: "Sidebar",
@@ -46,15 +48,20 @@ export default {
   },
 
   methods : {
-   async getCheckUp(){
-    try{
-      let {data} = await this.$http.get("marketplace/get_check_up/")
-      console.log(data)
-      this.checkup = data
-    }
-    catch (e) {
-      console.log(e)
-    }
+    getCheckUp(){
+   // try{
+   //   let {data} = await this.$http.get("marketplace/get_check_up/")
+   //   console.log(data)
+   //   this.checkup = data
+   // }
+   // catch (e) {
+   //   console.log(e)
+   // }
+     api('marketplace/get_check_up/')
+     .then(({data})=>{
+       this.checkup = data
+     })
+     .catch(e => console.error(e))
    },
   },
 
@@ -68,8 +75,13 @@ export default {
     }
   },
 
-  async mounted() {
-    await this.getCheckUp()
+   mounted() {
+     // this.getCheckUp()
+     api('marketplace/get_check_up/')
+         .then(({data})=>{
+           this.checkup = data
+         })
+         .catch(e => console.error(e))
   }
 
 }

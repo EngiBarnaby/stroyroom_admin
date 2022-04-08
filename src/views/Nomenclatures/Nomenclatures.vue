@@ -56,6 +56,8 @@
 </template>
 
 <script>
+import api from "@/plugins/axios";
+
 export default {
   // eslint-disable-next-line vue/multi-word-component-names
   name: "Nomenclatures",
@@ -89,7 +91,7 @@ export default {
     },
 
     async fetchData(){
-      let {data} = await this.$http.get(`marketplace/nomenclature_manager/?psz=${this.psz}&page=${this.page}&search=${this.search}`)
+      let {data} = await api(`marketplace/nomenclature_manager/?psz=${this.psz}&page=${this.page}&search=${this.search}`)
       this.count = data.count
       this.nomenclatures = data.results
     }
