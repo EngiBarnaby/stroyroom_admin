@@ -52,22 +52,36 @@ export default {
 
   methods : {
     async login(){
+      axios.post('accounts/auth/auth/',{
+        username : this.username,
+        password : this.password
+      })
+      .then((response)=>{
+        if(response.status === 200) {
+          localStorage.setItem("token", response.data.token)
+          this.$store.commit('user/setUserData', response.data)
+          this.$router.push("/")
+        }
+      })
+      .catch((e)=>{
+        console.error(e)
+      })
 
-      let formData = {
-        "username" : this.username,
-        "password" : this.password
-      }
-      try{
-        let userData = await axios.post("accounts/auth/auth/", formData)
-        await localStorage.setItem("token", userData.data.token)
-        await this.$store.commit('user/setUserData', userData.data)
-        await this.$router.push("/")
-
-
-      }
-      catch(error){
-        console.log(error)
-      }
+   //   let formData = {
+   //     "username" : this.username,
+   //     "password" : this.password
+   //   }
+   //   try{
+   //     let userData = await axios.post("accounts/auth/auth/", formData)
+   //     await localStorage.setItem("token", userData.data.token)
+   //     await this.$store.commit('user/setUserData', userData.data)
+   //     await this.$router.push("/")
+//
+//
+   //   }
+   //   catch(error){
+   //     console.log(error)
+   //   }
     },
   }
 
