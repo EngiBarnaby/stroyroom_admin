@@ -3,7 +3,6 @@
       <v-navigation-drawer
           clipped
           app
-          absolute
           color="primary"
           expand-on-hover
           mini-variant
@@ -42,7 +41,7 @@ export default {
         {name : "Номенклатура", icon : "mdi-clipboard-list-outline", link : "/nomenclatures", "key" : "nomenclature"},
         {name : "Сборки", icon : "mdi-clock", link : "/actions"},
         {name : "Магазины", icon : "mdi-store", link : "/shops", "key" : "shops"},
-        {name : "Мои заказы", icon : "mdi-book-account", link : "/contacts", "key" : "my_orders"},
+        {name : "Мои заказы", icon : "mdi-book-account", link : "/appointment-orders", "key" : "my_orders"},
       ],
     }
   },

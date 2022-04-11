@@ -47,13 +47,6 @@
         </p>
       </template>
 
-      <template  v-slot:[`item.actions`]='{ item }'>
-        <div v-if="item.order_manager === null" class="appoint-btn">
-          <v-btn @click="appointOrder(item)" outlined color="info">
-            Взять в работу
-          </v-btn>
-        </div>
-      </template>
 
       <template v-slot:no-data>
         <p>Нет данных</p>
@@ -75,7 +68,7 @@
 
 <script>
 export default {
-  name : "OrderTable",
+  name : "AppointmentOrders",
 
   data(){
     return {
@@ -87,7 +80,6 @@ export default {
         {text: "Тип оплаты", value : "payment_method"},
         {text : "Комментарий", value : "comment"},
         {text : "Сумма", value : "cost"},
-        { text: 'Действия', value: 'actions'},
       ],
       page : 1,
       psz : 50,
@@ -100,7 +92,7 @@ export default {
 
   methods : {
 
-   async appointOrder(item){
+    async appointOrder(item){
       await this.$http.get(`marketplace/manager_order/${item.id}/appoint_order/`)
       this.nomenclatures = this.nomenclatures.filter(el => el.id !== item.id)
     },
@@ -114,7 +106,7 @@ export default {
     },
 
     async fetchData(){
-      let {data} = await this.$http.get(`marketplace/manager_order/?psz=${this.psz}&page=${this.page}&search=${this.search}`)
+      let {data} = await this.$http.get(`marketplace/manager_appointment_orders/?psz=${this.psz}&page=${this.page}&search=${this.search}`)
       console.log(data)
       this.count = data.count
       this.nomenclatures = data.results
