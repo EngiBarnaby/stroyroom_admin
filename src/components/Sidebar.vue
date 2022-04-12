@@ -7,6 +7,7 @@
           expand-on-hover
           mini-variant
           mini-variant-width="75"
+          mobile-breakpoint="0"
       >
         <v-list nav dense >
             <v-list-item v-for="(item, i) in accepted_links" :key="i" :to="item.link">

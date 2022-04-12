@@ -30,7 +30,7 @@
         hide-default-header
         :hide-default-footer="true"
         class="elevation-1 table-bordered"
-        @dblclick:row="goToEditNomenclature"
+        @dblclick:row="goToOrder"
     >
 
       <template v-slot:header="{ props }">
@@ -97,8 +97,8 @@ export default {
       this.nomenclatures = this.nomenclatures.filter(el => el.id !== item.id)
     },
 
-    goToEditNomenclature(e, { item }) {
-      this.$router.push({ name: "edit-nomenclature", params: { id: item.id } });
+    goToOrder(e, { item }) {
+      this.$router.push({ name: "order-details", params: { id: item.id } });
     },
 
     onSearch(){
@@ -107,7 +107,6 @@ export default {
 
     async fetchData(){
       let {data} = await this.$http.get(`marketplace/manager_appointment_orders/?psz=${this.psz}&page=${this.page}&search=${this.search}`)
-      console.log(data)
       this.count = data.count
       this.nomenclatures = data.results
     }

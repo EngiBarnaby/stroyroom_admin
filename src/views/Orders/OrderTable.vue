@@ -115,7 +115,6 @@ export default {
 
     async fetchData(){
       let {data} = await this.$http.get(`marketplace/manager_order/?psz=${this.psz}&page=${this.page}&search=${this.search}`)
-      console.log(data)
       this.count = data.count
       this.nomenclatures = data.results
     }
