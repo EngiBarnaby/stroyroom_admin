@@ -24,3 +24,37 @@ export default {
 
 };
 </script>
+
+<style>
+
+* {
+  padding: 0;
+  margin: 0;
+}
+
+a {
+  text-decoration: none;
+}
+
+
+
+* {
+  scrollbar-width: 8px;
+  scrollbar-color: #0064b8 transparent;
+}
+
+/* scroll bar */
+*::-webkit-scrollbar {
+  width: 8px;               /* ширина scrollbar */
+}
+*::-webkit-scrollbar-track {
+  background: transparent;        /* цвет дорожки */
+}
+*::-webkit-scrollbar-thumb {
+  background-color: #0064b8;    /* цвет плашки */
+  border-radius: 20px;       /* закругления плашки */
+  border: 1px solid #0064b8;  /* padding вокруг плашки */
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+}
+
+</style>
