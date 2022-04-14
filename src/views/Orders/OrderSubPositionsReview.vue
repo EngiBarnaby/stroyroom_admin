@@ -1,47 +1,6 @@
 <template>
   <div>
 
-    <v-dialog v-model="dialogApprove" width="500" @click:outside="closeApproveDialog">
-      <v-card>
-        <v-card-title>
-          Вы уверены, что хотите подвердить сборку?
-        </v-card-title>
-        <v-card-actions>
-          <v-btn outlined color="error" @click="closeApproveDialog">
-            Нет
-          </v-btn>
-          <v-btn outlined color="success" @click="approveSubOrder">
-            Да
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-
-    <v-dialog v-model="shopProductsDialog" width="1500">
-      <v-card class="pa-4">
-        <ShopPositions :subOrder.sync="currentSubOrder" @refresh="refresh" />
-      </v-card>
-    </v-dialog>
-
-    <v-dialog
-        width="500"
-        v-model="deleteDialog"
-        @click:outside="closeDeleteDialog"
-    >
-      <v-card>
-        <v-card-title>
-          Вы уверены, что хотите удалить товар?
-        </v-card-title>
-        <v-card-actions>
-          <v-btn outlined color="error" @click="closeDeleteDialog">
-            Нет
-          </v-btn>
-          <v-btn outlined color="success" @click="deletePosition">
-            Да
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
 
     <div class="scroll">
       <div v-for="subOrder in subOrders" :key="subOrder.id">
@@ -77,43 +36,9 @@
                   <h6>Единица измерения : {{item._nomenclature._measurement.name}}</h6>
                   <h6>Цена за единицу : {{item._product.cost}} &#8381;</h6>
                   <h6>Общая цена {{(item.count * item._product.cost ).toFixed(2)}} &#8381;</h6>
-                  <h6>Количество в магазине : {{item._product.count}}</h6>
-                  <v-text-field
-                      :value="item.count"
-                      prepend-icon="mdi-minus-circle-outline"
-                      append-outer-icon="mdi-plus-circle-outline"
-                      type="number"
-                      @input="setValue($event, item)"
-                      @click:prepend="subtract(item)"
-                      @click:append-outer="add(item)"
-                  ></v-text-field>
-
-                  <v-tooltip bottom>
-                    <template v-slot:activator="{ on, attrs }">
-                      <v-btn
-                          v-bind="attrs"
-                          v-on="on"
-                          icon
-                          @click="openDeleteDialog(item, subOrder)"
-                      >
-                        <v-icon
-                            color="error"
-                        >
-                          mdi-trash-can-outline
-                        </v-icon>
-                      </v-btn>
-                    </template>
-                    <span>Удалить позицию</span>
-                  </v-tooltip>
                 </div>
               </div>
               <v-divider></v-divider>
-              <v-btn outlined color="info" @click="openShopProducts(subOrder)">
-                Добавить позицию в сборку
-              </v-btn>
-              <v-btn outlined color="success" class="ml-4" @click="openApproveDialog(subOrder)">
-                Потвердить сборку
-              </v-btn>
             </v-card-text>
           </div>
           <div v-else>
@@ -121,7 +46,7 @@
               <h6>
                 Сборка пуста
               </h6>
-              <v-btn outlined color="info" @click="openShopProducts(subOrder)">
+              <v-btn outlined color="info">
                 Добавить позицию в сборку
               </v-btn>
             </v-card-text>
@@ -133,17 +58,12 @@
 </template>
 
 <script>
-import ShopPositions from "@/views/Orders/ShopPositions";
 export default {
   name: "OrderSubPosition",
 
-  components : {
-    ShopPositions
-  },
 
   data(){
     return {
-      dialogApprove : false,
       shopProductsDialog : false,
       deleteDialog : false,
 
@@ -158,27 +78,6 @@ export default {
   },
 
   methods : {
-
-    async approveSubOrder(){
-      try{
-        await this.$http.get(`marketplace/manager_sub_order/${this.currentSubOrder.id}/approve_sub_order_by_order_manager/`)
-        this.subOrders = this.subOrders.filter(el => el.id !== this.currentSubOrder.id)
-        this.closeApproveDialog()
-      }
-      catch (e){
-        console.log(e)
-      }
-    },
-
-    closeApproveDialog(){
-      this.currentSubOrder = {}
-      this.dialogApprove = false
-    },
-
-    openApproveDialog(subOrder){
-      this.currentSubOrder = subOrder
-      this.dialogApprove = true
-    },
 
     refresh(){
       this.subOrders = []
@@ -204,6 +103,8 @@ export default {
 
     async deletePosition(){
       let subOrderPosition = this.currentItem.id
+      let orderPosition = this.orderPositions.filter(el => el.product === this.currentItem.product)[0].id
+      await this.$http.delete(`marketplace/manager_order_positions/${orderPosition}/`)
       await this.$http.delete(`marketplace/manager_sub_order_positions/${subOrderPosition}/`)
       this.subOrders = this.subOrders.filter(el => {
         if(el.id === this.currentSubOrder.id){
@@ -214,23 +115,11 @@ export default {
       this.deleteDialog = false
     },
 
-    setValue(e, item){
-      item.count = e
+
+    async fetchOrderPositions(){
+      let {data} = await this.$http.get(`marketplace/manager_order_positions/?order=${this.$route.params.id}`)
+      this.orderPositions = data
     },
-
-    subtract(item){
-      if(item.count > 0)
-        item.count -= 1
-      else {
-        item.count = 0
-      }
-    },
-
-    add(item){
-      item.count += 1
-    },
-
-
 
     async fetchSubOrders(){
       let { data } = await this.$http.get(`marketplace/manager_sub_order/?order=${this.$route.params.id}`)
@@ -249,6 +138,7 @@ export default {
 
   mounted(){
     this.fetchSubOrders()
+    this.fetchOrderPositions()
   }
 }
 </script>
@@ -290,7 +180,7 @@ export default {
   width: 150px;
 }
 
-.v-text-field {
+.custom-count {
   width: 130px;
 }
 

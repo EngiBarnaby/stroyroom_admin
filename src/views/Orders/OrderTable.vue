@@ -1,76 +1,84 @@
 <template>
-  <v-container>
-
-    <v-row >
-      <v-col md="4" class="ml-5">
-        <v-select
-            :items="quantity"
-            label="Кол-во"
-            v-model="psz"
-
-        ></v-select>
-      </v-col>
-      <v-spacer></v-spacer>
-      <v-col cols="4">
-        <v-text-field
-            append-icon="mdi-magnify"
-            label="Поиск"
-            placeholder="Поиск"
-            v-model="search"
-            v-debounce:1s="onSearch"
-        >
-        </v-text-field>
-      </v-col>
-    </v-row>
-
-    <v-data-table
-        :items="nomenclatures"
-        :headers="tableHeaders"
-        disable-pagination
-        hide-default-header
-        :hide-default-footer="true"
-        class="elevation-1 table-bordered"
-        @dblclick:row="goToEditNomenclature"
-    >
-
-      <template v-slot:header="{ props }">
-        <th  v-for="(head, i) in props.headers" class="header-text" :key="i" style="{font-size: 8px}">{{ head.text }}</th>
-      </template>
-
-
-      <template  v-slot:[`item.payment_method`]='{ item }'>
-        <p v-if="item.payment_method === 'card'">
-          Картой
-        </p>
-        <p v-if="item.payment_method === 'cash'">
-          Наличные
-        </p>
-      </template>
-
-      <template  v-slot:[`item.actions`]='{ item }'>
-        <div v-if="item.order_manager === null" class="appoint-btn">
-          <v-btn @click="appointOrder(item)" outlined color="info">
-            Взять в работу
-          </v-btn>
-        </div>
-      </template>
-
-      <template v-slot:no-data>
-        <p>Нет данных</p>
-      </template>
-
-    </v-data-table>
-
-    <div class="text-center">
-      <v-pagination
-          v-model="page"
-          :length="length"
-          :total-visible="7"
-          @input="fetchData"
-      ></v-pagination>
+  <div>
+    <div class="icon-back">
+      <v-icon x-large @click="$router.go(-1)">
+        mdi-arrow-left
+      </v-icon>
     </div>
 
-  </v-container>
+    <v-container>
+
+      <v-row >
+        <v-col md="4" class="ml-5">
+          <v-select
+              :items="quantity"
+              label="Кол-во"
+              v-model="psz"
+
+          ></v-select>
+        </v-col>
+        <v-spacer></v-spacer>
+        <v-col cols="4">
+          <v-text-field
+              append-icon="mdi-magnify"
+              label="Поиск"
+              placeholder="Поиск"
+              v-model="search"
+              v-debounce:1s="onSearch"
+          >
+          </v-text-field>
+        </v-col>
+      </v-row>
+
+      <v-data-table
+          :items="orders"
+          :headers="tableHeaders"
+          disable-pagination
+          hide-default-header
+          :hide-default-footer="true"
+          class="elevation-1 table-bordered"
+          @dblclick:row="goToOrderDetails"
+      >
+
+        <template v-slot:header="{ props }">
+          <th  v-for="(head, i) in props.headers" class="header-text" :key="i" style="{font-size: 8px}">{{ head.text }}</th>
+        </template>
+
+
+        <template  v-slot:[`item.payment_method`]='{ item }'>
+          <p v-if="item.payment_method === 'card'">
+            Картой
+          </p>
+          <p v-if="item.payment_method === 'cash'">
+            Наличные
+          </p>
+        </template>
+
+        <template  v-slot:[`item.actions`]='{ item }'>
+          <div v-if="item.order_manager === null" class="appoint-btn">
+            <v-btn @click="appointOrder(item)" outlined color="info">
+              Взять в работу
+            </v-btn>
+          </div>
+        </template>
+
+        <template v-slot:no-data>
+          <p>Нет данных</p>
+        </template>
+
+      </v-data-table>
+
+      <div class="text-center">
+        <v-pagination
+            v-model="page"
+            :length="length"
+            :total-visible="7"
+            @input="fetchData"
+        ></v-pagination>
+      </div>
+
+    </v-container>
+  </div>
 </template>
 
 <script>
@@ -79,7 +87,7 @@ export default {
 
   data(){
     return {
-      nomenclatures : [],
+      orders : [],
       tableHeaders : [
         { text: "ID", value: "id"},
         {text : "адрес" , value : "_address"},
@@ -102,11 +110,11 @@ export default {
 
    async appointOrder(item){
       await this.$http.get(`marketplace/manager_order/${item.id}/appoint_order/`)
-      this.nomenclatures = this.nomenclatures.filter(el => el.id !== item.id)
+      this.orders = this.orders.filter(el => el.id !== item.id)
     },
 
-    goToEditNomenclature(e, { item }) {
-      this.$router.push({ name: "edit-nomenclature", params: { id: item.id } });
+    goToOrderDetails(e, { item }) {
+      this.$router.push({ name: "order-details-review", params: { id: item.id } });
     },
 
     onSearch(){
@@ -116,7 +124,7 @@ export default {
     async fetchData(){
       let {data} = await this.$http.get(`marketplace/manager_order/?psz=${this.psz}&page=${this.page}&search=${this.search}`)
       this.count = data.count
-      this.nomenclatures = data.results
+      this.orders = data.results
     }
   },
 

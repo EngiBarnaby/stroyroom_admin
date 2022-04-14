@@ -31,13 +31,13 @@
       </v-row>
 
       <v-data-table
-          :items="nomenclatures"
+          :items="orders"
           :headers="tableHeaders"
           disable-pagination
           hide-default-header
           :hide-default-footer="true"
           class="elevation-1 table-bordered"
-          @dblclick:row="goToOrder"
+          @dblclick:row="goToOrderDetails"
       >
 
         <template v-slot:header="{ props }">
@@ -54,6 +54,13 @@
           </p>
         </template>
 
+        <template  v-slot:[`item.actions`]='{ item }'>
+          <div v-if="item.order_manager === null" class="appoint-btn">
+            <v-btn @click="appointOrder(item)" outlined color="info">
+              Взять в работу
+            </v-btn>
+          </div>
+        </template>
 
         <template v-slot:no-data>
           <p>Нет данных</p>
@@ -76,11 +83,11 @@
 
 <script>
 export default {
-  name : "AppointmentOrders",
+  name: "LogistOrdersTable",
 
   data(){
     return {
-      nomenclatures : [],
+      orders : [],
       tableHeaders : [
         { text: "ID", value: "id"},
         {text : "адрес" , value : "_address"},
@@ -88,6 +95,7 @@ export default {
         {text: "Тип оплаты", value : "payment_method"},
         {text : "Комментарий", value : "comment"},
         {text : "Сумма", value : "cost"},
+        { text: 'Действия', value: 'actions'},
       ],
       page : 1,
       psz : 50,
@@ -102,11 +110,11 @@ export default {
 
     async appointOrder(item){
       await this.$http.get(`marketplace/manager_order/${item.id}/appoint_order/`)
-      this.nomenclatures = this.nomenclatures.filter(el => el.id !== item.id)
+      this.orders = this.orders.filter(el => el.id !== item.id)
     },
 
-    goToOrder(e, { item }) {
-      this.$router.push({ name: "order-details", params: { id: item.id } });
+    goToOrderDetails(e, { item }) {
+      this.$router.push({ name: "order-details-review", params: { id: item.id } });
     },
 
     onSearch(){
@@ -114,9 +122,10 @@ export default {
     },
 
     async fetchData(){
-      let {data} = await this.$http.get(`marketplace/manager_appointment_orders/?psz=${this.psz}&page=${this.page}&search=${this.search}`)
+      let {data} = await this.$http.get(`marketplace/logist_manager_order/?psz=${this.psz}&page=${this.page}&search=${this.search}`)
+      console.log(data)
       this.count = data.count
-      this.nomenclatures = data.results
+      this.orders = data.results
     }
   },
 

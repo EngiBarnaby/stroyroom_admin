@@ -116,6 +116,8 @@ export default {
 }
 
 .main-wrapper {
+  height: 100vh;
+  overflow: auto;
   margin-top: 25px;
 }
 

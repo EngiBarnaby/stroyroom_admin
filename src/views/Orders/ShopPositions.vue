@@ -1,7 +1,7 @@
 <template>
   <div>
     <h2 class="title">
-      Продукты магазина : {{shop.address}}
+      Продукты магазина : {{subOrder._shop.address}}
     </h2>
     <div class="search-wrapper">
       <div class="search-field">
@@ -9,7 +9,7 @@
       </div>
     </div>
     <v-row>
-      <v-col cols="4" v-for="(product,index) in shopProducts" :key="product.id">
+      <v-col cols="4" v-for="(product) in shopProducts" :key="product.id">
         <v-card height="500">
           <v-card-subtitle>
             <h6>{{product._nomenclature.name}}</h6>
@@ -45,10 +45,14 @@
                     type="number"
                     @input="setValue($event, product)"
                     @click:prepend="subtract(product)"
-                    @click:append-outer="add(index)"
+                    @click:append-outer="add(product)"
                 ></v-text-field>
               </div>
-              <v-btn color="success" class="add-btn" outlined>
+              <v-btn color="success"
+                     class="add-btn"
+                     outlined
+                     @click="addToSubOrder(product)"
+              >
                 Добавить
               </v-btn>
             </v-row>
@@ -64,6 +68,17 @@
           @input="fetchProducts"
       ></v-pagination>
     </div>
+
+    <v-snackbar
+        v-model="successAdd"
+        :timeout="2000"
+        color="success"
+        outlined
+    >
+      Товар успешно добавлен в сборку
+
+    </v-snackbar>
+
   </div>
 </template>
 
@@ -72,10 +87,12 @@
 
 export default {
   name: "ShopPositions",
-  props : ["shop"],
+  props : ["subOrder"],
 
   data(){
     return {
+      successAdd : false,
+
       shopProducts : [],
 
       psz : 50,
@@ -87,40 +104,76 @@ export default {
 
   methods : {
 
-    setValue(e, item){
-      item.currentCount = e
-    },
-
-    subtract(item){
-      if(item.currentCount > 0)
-        item.currentCount -= 1
-      else {
-        item.currentCount = 0
+    async addToSubOrder(product){
+      if(product.currentCount > 0){
+        try{
+          await this.$http.post(`marketplace/manager_sub_order_positions/add_position_to_suborder/`, {
+            "product" : product.id,
+            "nomenclature" : product.nomenclature,
+            "sub_order" : this.subOrder.id,
+            "count" : product.currentCount
+          })
+          this.$emit("refresh")
+          this.successAdd = true
+        }
+        catch (e){
+          console.log(e)
+        }
       }
     },
 
-    add(index){
-      this.shopProducts[index].currentCount += 1
+    setValue(e, product){
+      if(e < 0){
+        product.currentCount = 0
+      }
+      else if(e > product.count){
+        product.currentCount = product.count
+      }
+      else{
+        product.currentCount = e
+      }
+    },
+
+    subtract(product){
+      if(product.currentCount > 0)
+        product.currentCount -= 1
+      else {
+        product.currentCount = 0
+      }
+    },
+
+    add(product){
+      if(product.count > product.currentCount){
+        product.currentCount += 1
+      }
     },
 
     onSearch(){
       this.fetchProducts()
     },
 
-    async fetchProducts(){
-      let {data} = await this.$http.get(`marketplace/nomenclature_manager_products/?shop=${this.shop.id}&search=${this.search}&page=${this.page}`)
+    async fetchProducts(subOrder){
+      let {data} = await this.$http.get(`marketplace/nomenclature_manager_products/?shop=${this.subOrder._shop.id}&search=${this.search}&page=${this.page}`)
       this.count = data.count
-      this.shopProducts = data.results
-      this.shopProducts = this.shopProducts.map(function (el){
-        el.currentCount = 0
-        return el
-      })
+      let results = data.results
+      results = results.map(function (el){
+        for(let i = 0; i < subOrder.positions.length; i++){
+          if(el.id === subOrder.positions[i].product){
+            el.currentCount = subOrder.positions[i].count
+            return el
+          }
+        }
+          el.currentCount = 0
+          return el
+        })
+      this.shopProducts = results
+      console.log(this.shopProducts)
     }
   },
 
   watch : {
     shop(){
-      this.fetchProducts()
+      this.fetchProducts(this.subOrder)
     }
   },
 
@@ -131,7 +184,8 @@ export default {
   },
 
   mounted() {
-    this.fetchProducts()
+    console.log(this.subOrder)
+    this.fetchProducts(this.subOrder)
   }
 
 }
