@@ -55,7 +55,7 @@
         </template>
 
         <template  v-slot:[`item.actions`]='{ item }'>
-          <div v-if="item.order_manager === null" class="appoint-btn">
+          <div v-if="item.logist_manager === null" class="appoint-btn">
             <v-btn @click="appointOrder(item)" outlined color="info">
               Взять в работу
             </v-btn>
@@ -83,7 +83,7 @@
 
 <script>
 export default {
-  name: "LogistOrdersTable",
+  name : "LogistOrdersTable",
 
   data(){
     return {
@@ -109,12 +109,12 @@ export default {
   methods : {
 
     async appointOrder(item){
-      await this.$http.get(`marketplace/manager_order/${item.id}/appoint_order/`)
+      await this.$http.get(`marketplace/logist_manager_order/${item.id}/appoint_order/`)
       this.orders = this.orders.filter(el => el.id !== item.id)
     },
 
     goToOrderDetails(e, { item }) {
-      this.$router.push({ name: "order-details-review", params: { id: item.id } });
+      this.$router.push({ name: "logist-order-details", params: { id: item.id } });
     },
 
     onSearch(){
@@ -123,7 +123,6 @@ export default {
 
     async fetchData(){
       let {data} = await this.$http.get(`marketplace/logist_manager_order/?psz=${this.psz}&page=${this.page}&search=${this.search}`)
-      console.log(data)
       this.count = data.count
       this.orders = data.results
     }

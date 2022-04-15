@@ -76,7 +76,7 @@
 
 <script>
 export default {
-  name : "AppointmentOrders",
+  name : "LogistAppoinmentOrders",
 
   data(){
     return {
@@ -100,7 +100,6 @@ export default {
 
   methods : {
 
-
     goToOrder(e, { item }) {
       this.$router.push({ name: "order-details", params: { id: item.id } });
     },
@@ -110,7 +109,7 @@ export default {
     },
 
     async fetchData(){
-      let {data} = await this.$http.get(`marketplace/manager_appointment_orders/?psz=${this.psz}&page=${this.page}&search=${this.search}`)
+      let {data} = await this.$http.get(`marketplace/logist_appointment_orders/?psz=${this.psz}&page=${this.page}&search=${this.search}`)
       this.count = data.count
       this.nomenclatures = data.results
     }

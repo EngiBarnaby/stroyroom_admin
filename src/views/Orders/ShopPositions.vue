@@ -167,7 +167,6 @@ export default {
           return el
         })
       this.shopProducts = results
-      console.log(this.shopProducts)
     }
   },
 

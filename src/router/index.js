@@ -69,6 +69,24 @@ const routes = [
     name : "logist-orders-table",
     component : () => import("../views/LogistOrders/LogistOrdersTable"),
     meta: { requiresAuth: true, },
+  },
+  {
+    path : "/appointment-logist-orders",
+    name : "appointment-logist-orders",
+    component : () => import("../views/LogistOrders/LogistAppoinmentOrders"),
+    meta: { requiresAuth: true, },
+  },
+  {
+    path : "/logist-order-details/:id",
+    name : "logist-order-details",
+    component : () => import("../views/LogistOrders/LogistOrderReview"),
+    meta: { requiresAuth: true, },
+  },
+  {
+    path : "/cars",
+    name : "cars",
+    component : () => import("../views/Cars/CarScreen"),
+    meta: { requiresAuth: true, },
   }
 ]
 

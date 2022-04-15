@@ -1,10 +1,26 @@
 <template>
   <div>
 
+    <v-dialog v-model="deleteSubOrderDialog" width="500" @click:outside="closeDeleteSubOrderDialog">
+      <v-card>
+        <v-card-title>
+          Вы действительно хотите удалить сборку?
+        </v-card-title>
+        <v-card-actions>
+          <v-btn outlined color="error" @click="closeDeleteSubOrderDialog">
+            Нет
+          </v-btn>
+          <v-btn outlined color="success" @click="deleteSubOrder">
+            Да
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
     <v-dialog v-model="dialogApprove" width="500" @click:outside="closeApproveDialog">
       <v-card>
         <v-card-title>
-          Вы уверены, что хотите подвердить сборку?
+          Вы уверены, что хотите подтвердить сборку?
         </v-card-title>
         <v-card-actions>
           <v-btn outlined color="error" @click="closeApproveDialog">
@@ -108,21 +124,32 @@
                 </div>
               </div>
               <v-divider></v-divider>
+            </v-card-text>
+            <v-card-actions>
               <v-btn outlined color="info" @click="openShopProducts(subOrder)">
                 Добавить позицию в сборку
               </v-btn>
-              <v-btn outlined color="success" class="ml-4" @click="openApproveDialog(subOrder)">
-                Потвердить сборку
+              <v-btn outlined color="success" v-if="!subOrder.manager_approve" class="ml-4" @click="openApproveDialog(subOrder)">
+                Подтвердить сборку
               </v-btn>
-            </v-card-text>
+              <v-btn outlined color="error" class="ml-4" @click="openDeleteSubOrderDialog(subOrder)">
+                Удалить сборку
+              </v-btn>
+            </v-card-actions>
+            <h5 v-if="subOrder.manager_approve" class="green--text">
+              Сборка подтверждена
+            </h5>
           </div>
           <div v-else>
             <v-card-text>
-              <h6>
+              <h5>
                 Сборка пуста
-              </h6>
+              </h5>
               <v-btn outlined color="info" @click="openShopProducts(subOrder)">
                 Добавить позицию в сборку
+              </v-btn>
+              <v-btn outlined color="error" class="ml-4" @click="openDeleteSubOrderDialog(subOrder)">
+                Удалить сборку
               </v-btn>
             </v-card-text>
           </div>
@@ -143,6 +170,7 @@ export default {
 
   data(){
     return {
+      deleteSubOrderDialog : false,
       dialogApprove : false,
       shopProductsDialog : false,
       deleteDialog : false,
@@ -157,12 +185,39 @@ export default {
     }
   },
 
+  watch : {
+    subOrders(){
+      for (let i = 0; i < this.subOrders.length; i++) {
+        if(this.subOrders[i].manager_approve === false){
+          return this.$emit("all_approved", false)
+        }
+      }
+      return this.$emit("all_approved", true)
+    }
+  },
+
   methods : {
+
+    closeDeleteSubOrderDialog(){
+      this.currentSubOrder = {}
+      this.deleteSubOrderDialog = false
+    },
+
+    openDeleteSubOrderDialog(subOrder){
+      this.currentSubOrder = subOrder
+      this.deleteSubOrderDialog = true
+    },
+
+    async deleteSubOrder(){
+      await this.$http.delete(`marketplace/manager_sub_order/${this.currentSubOrder.id}/`)
+      this.subOrders = this.subOrders.filter(el => el.id !== this.currentSubOrder.id)
+      this.closeDeleteSubOrderDialog()
+    },
 
     async approveSubOrder(){
       try{
         await this.$http.get(`marketplace/manager_sub_order/${this.currentSubOrder.id}/approve_sub_order_by_order_manager/`)
-        this.subOrders = this.subOrders.filter(el => el.id !== this.currentSubOrder.id)
+        // this.subOrders = this.subOrders.filter(el => el.id !== this.currentSubOrder.id)
         this.closeApproveDialog()
       }
       catch (e){
@@ -236,7 +291,6 @@ export default {
       let { data } = await this.$http.get(`marketplace/manager_sub_order/?order=${this.$route.params.id}`)
       await Promise.all(data.map(item => this.fetchSubOrderPositions(item)))
       this.subOrders.sort((first, second) => first.id - second.id)
-      console.log(this.subOrders)
     },
 
     async fetchSubOrderPositions(subOrder){

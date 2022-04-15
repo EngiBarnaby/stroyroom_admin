@@ -39,11 +39,12 @@ export default {
       mainList : [
         {name : "Заказы", icon : "mdi-cart-outline", link : "/orders", "key" : "orders"},
         {name : "Заказы", icon : "mdi-cart-outline", link : "/logist-orders-table", "key" : "logist_orders"},
-        {name : "Машины", icon : "mdi-truck-cargo-container", link : "/kanban", "key" : "cars"},
+        {name : "Машины", icon : "mdi-truck-cargo-container", link : "/cars", "key" : "cars"},
         {name : "Номенклатура", icon : "mdi-clipboard-list-outline", link : "/nomenclatures", "key" : "nomenclature"},
         {name : "Сборки", icon : "mdi-clock", link : "/actions"},
         {name : "Магазины", icon : "mdi-store", link : "/shops", "key" : "shops"},
         {name : "Мои заказы", icon : "mdi-book-account", link : "/appointment-orders", "key" : "my_orders"},
+        {name : "Мои заказы", icon : "mdi-book-account", link : "/appointment-logist-orders", "key" : "my_orders_logist"},
       ],
     }
   },
