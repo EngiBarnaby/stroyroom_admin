@@ -20,10 +20,10 @@
         <Cars />
       </v-tab-item>
 
-<!--      <v-tab-item-->
-<!--      >-->
-<!--        <OrderPosition />-->
-<!--      </v-tab-item>-->
+      <v-tab-item
+      >
+        <CarsType />
+      </v-tab-item>
 
     </v-tabs-items>
 
@@ -32,10 +32,11 @@
 
 <script>
 import Cars from "@/views/Cars/Cars";
+import CarsType from "@/views/Cars/CarsType";
 export default {
   name: "CarScreen",
 
-  components : {Cars},
+  components : {Cars, CarsType},
 
   data(){
     return {

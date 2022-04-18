@@ -5,7 +5,7 @@
         <v-row justify="center">
           <v-col xs="10" sm="6" md="4" lg="4" v-for="(car, index) in cars" :key="car.id">
             <div v-if="car.edit === false" >
-              <v-card class="pa-4 car-info">
+              <v-card class="pa-4 car-info" height="300">
                 <div class="edit-btn">
                   <v-btn icon @click="car.edit = true">
                     <v-icon>
