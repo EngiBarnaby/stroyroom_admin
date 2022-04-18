@@ -29,7 +29,7 @@
         <v-row>
           <v-col xs="10" sm="6" md="4" lg="4" v-for="(type) in carsType" :key="type.id">
             <div>
-              <v-card class="pa-4" height="450" style="overflow: auto;">
+              <v-card class="pa-4 card" height="450" style="overflow: auto;">
                 <v-card-title>
                   {{type.name}}
                 </v-card-title>
@@ -40,6 +40,11 @@
                 <h6>Ширина: {{type.width}}</h6>
                 <h6>Длина: {{type.long}}</h6>
                 <h6>Макс. вес: {{type.max_weight}} кг.</h6>
+                <div class="success-btn">
+                  <v-btn outlined block color="success" @click="$emit('selectType', type)">
+                    Выбрать
+                  </v-btn>
+                </div>
               </v-card>
             </div>
           </v-col>
@@ -60,7 +65,7 @@
 
 <script>
 export default {
-  name: "CarsType",
+  name: "CarsTypeForAdd",
 
   data(){
     return {
@@ -77,12 +82,8 @@ export default {
   methods : {
     async fetchCarsType(){
       let { data } = await this.$http.get(`marketplace/logist_manager_car_type/?psz=${this.psz}&page=${this.page}&search=${this.search}`)
-      let results = data.results.map(el => {
-        el.edit = false
-        return el
-      })
       this.count = data.count
-      this.carsType = results
+      this.carsType = data.results
     }
   },
 
@@ -102,5 +103,15 @@ export default {
 
 <style scoped>
 
+.card {
+  position: relative;
+  display: block;
+}
+
+.success-btn {
+  width: 90%;
+  position: absolute;
+  bottom: 10px;
+}
 
 </style>

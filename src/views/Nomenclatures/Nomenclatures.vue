@@ -3,11 +3,22 @@
 
     <v-row >
       <v-col md="4" class="ml-5">
+
+        <v-col md="4" class="ml-5">
+          <v-select
+              hide-details
+              :items="quantity"
+              label="Кол-во"
+              v-model="psz"
+
+          ></v-select>
+        </v-col>
+
         <v-select
             :items="quantity"
             label="Кол-во"
             v-model="psz"
-
+            @input="fetchData"
         ></v-select>
       </v-col>
       <v-spacer></v-spacer>
@@ -17,7 +28,7 @@
             label="Поиск"
             placeholder="Поиск"
             v-model="search"
-            v-debounce:1s="onSearch"
+            v-debounce:1s="fetchData"
         >
         </v-text-field>
       </v-col>
@@ -86,9 +97,6 @@ export default {
       this.$router.push({ name: "edit-nomenclature", params: { id: item.id } });
     },
 
-    onSearch(){
-      this.fetchData()
-    },
 
     async fetchData(){
       let {data} = await api(`marketplace/nomenclature_manager/?psz=${this.psz}&page=${this.page}&search=${this.search}`)
