@@ -93,6 +93,12 @@ const routes = [
     name : "add-car",
     component: () => import("../views/Cars/AddCar"),
     meta: { requiresAuth: true, },
+  },
+  {
+    path : "/add-car-type",
+    name : "add-car-type",
+    component: () => import("../views/Cars/AddCarType"),
+    meta: { requiresAuth: true, },
   }
 ]
 
