@@ -83,6 +83,12 @@ const routes = [
     meta: { requiresAuth: true, },
   },
   {
+    path : "/appointment-order-detail/:id",
+    name : "appointment-order-detail",
+    component : () => import("../views/LogistOrders/AppointmentOrderDetail"),
+    meta: { requiresAuth: true, },
+  },
+  {
     path : "/cars",
     name : "cars",
     component : () => import("../views/Cars/CarScreen"),

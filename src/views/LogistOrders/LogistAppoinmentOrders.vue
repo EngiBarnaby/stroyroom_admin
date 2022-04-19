@@ -101,7 +101,7 @@ export default {
   methods : {
 
     goToOrder(e, { item }) {
-      this.$router.push({ name: "order-details", params: { id: item.id } });
+      this.$router.push({ name: "appointment-order-detail", params: { id: item.id } });
     },
 
     onSearch(){

@@ -242,8 +242,6 @@ export default {
 }
 
 .edit-btn {
-  /*display: flex;*/
-  /*justify-content: end;*/
   position: absolute;
   top: 0px;
   right: 0px;
