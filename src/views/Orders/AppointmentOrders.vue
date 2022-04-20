@@ -14,6 +14,7 @@
               :items="quantity"
               label="Кол-во"
               v-model="psz"
+              @input="fetchData"
 
           ></v-select>
         </v-col>

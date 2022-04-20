@@ -7,50 +7,106 @@
     </div>
     <v-row justify="center">
       <v-col cols="6">
+        <v-tabs
+            v-model="tab"
+            background-color="transparent"
+            color="basil"
+            grow
+        >
+          <v-tab
+              v-for="item in items"
+              :key="item"
+          >
+            {{ item }}
+          </v-tab>
+        </v-tabs>
 
-        <v-text-field label="Название" v-model="nomenclature.name" />
+        <v-tabs-items v-model="tab">
+          <v-tab-item
+          >
+            <v-card class="pa-4 mt-4">
+              <v-row justify="center">
+                <h5>Редактирование номенклатуры</h5>
+              </v-row>
+              <v-text-field
+                  label="Название"
+                  :rules="[(v) => !!v || 'Обязательное поле']"
+                  v-model="nomenclature.name" />
 
-        <v-autocomplete
-            class="mb-2"
-            background-color="white"
-            v-model="nomenclature.category"
-            :items="categories"
-            item-text="name"
-            item-value="id"
-            dense
-            label="Категория"
-            clearable
-            no-data-text="Нет доступных данных"
-        />
+              <v-autocomplete
+                  class="mb-2"
+                  background-color="white"
+                  v-model="nomenclature.category"
+                  :items="categories"
+                  item-text="name"
+                  item-value="id"
+                  dense
+                  label="Категория"
+                  clearable
+                  no-data-text="Нет доступных данных"
+              />
 
-        <v-autocomplete
-            class="mb-2"
-            background-color="white"
-            v-model="nomenclature.measurement"
-            :items="measurements"
-            item-text="name"
-            item-value="id"
-            dense
-            label="Категория"
-            clearable
-            no-data-text="Нет доступных данных"
-        />
+              <v-autocomplete
+                  class="mb-2"
+                  background-color="white"
+                  v-model="nomenclature.measurement"
+                  :items="measurements"
+                  item-text="name"
+                  item-value="id"
+                  dense
+                  label="Единица измерения"
+                  clearable
+                  no-data-text="Нет доступных данных"
+              />
 
-        <v-text-field label="Высота" v-model="nomenclature.height" />
+              <v-text-field label="Высота" v-model="nomenclature.height" />
 
-        <v-text-field label="Ширина" v-model="nomenclature.width" />
+              <v-text-field label="Ширина" v-model="nomenclature.width" />
 
-        <v-text-field label="Длина" v-model="nomenclature.long" />
+              <v-text-field label="Длина" v-model="nomenclature.long" />
 
-        <v-text-field label="Вес" v-model="nomenclature.weight" />
+              <v-text-field label="Вес" v-model="nomenclature.weight" />
 
-        <v-textarea outlined label="Описание" v-model="nomenclature.description" />
+              <v-textarea outlined label="Описание" v-model="nomenclature.description" />
 
-        <div class="change-btn">
-          <v-btn color="primary" outlined @click="changeNomenclature">
-            Изменить
-          </v-btn>
-        </div>
+              <div class="change-btn">
+                <v-btn color="primary" outlined @click="changeNomenclature">
+                  Изменить
+                </v-btn>
+              </div>
+            </v-card>
+          </v-tab-item>
+
+          <v-tab-item
+          >
+            <div class="mt-8">
+              <v-row>
+                <v-col cols="4" v-for="img in images" :key="img.id">
+                  <div class="img">
+                    <v-img
+                        max-height="150"
+                        max-width="150"
+                        :src="img.img"
+                    ></v-img>
+                    <v-btn outlined color="error" class="mt-2">
+                      Удалить
+                    </v-btn>
+                  </div>
+                </v-col>
+                <v-col cols="4">
+                  <v-card class="add-card">
+                    <v-icon>
+                      mdi-plus
+                    </v-icon>
+                    <input type="file" @input="addImages" class="image_upload" />
+                  </v-card>
+                </v-col>
+              </v-row>
+            </div>
+          </v-tab-item>
+
+        </v-tabs-items>
+
       </v-col>
     </v-row>
 
@@ -77,6 +133,11 @@ export default {
     return {
       snackbar : false,
 
+      tab : 0,
+      items: [
+        'Иформаций', 'Фотографий',
+      ],
+      images : [],
       nomenclature : {},
       categories : [],
       measurements : [],
@@ -84,6 +145,20 @@ export default {
   },
 
   methods : {
+
+    async addImages(e){
+      let fd = new FormData();
+      fd.append("img", e.target.files[0])
+      fd.append("nomenclature", this.$route.params.id)
+      await api.post(`marketplace/nomenclature_manager_images/`, fd)
+      await this.fetchImages()
+    },
+
+    async fetchImages(){
+      let { data } = await api.get(`marketplace/nomenclature_manager_images/?nomenclature=${this.$route.params.id}`)
+      this.images = data
+    },
+
     async fetchNomenclature(){
       let { data } = await api(`marketplace/nomenclature_manager/${this.$route.params.id}/`)
       this.nomenclature = data
@@ -115,11 +190,46 @@ export default {
     this.fetchNomenclature()
     this.fetchCategories()
     this.fetchMeasurements()
+    this.fetchImages()
   }
 }
 </script>
 
 <style scoped>
+
+.image_upload:hover {
+  cursor: pointer;
+}
+
+.image_upload {
+  opacity: 0;
+  border: none;
+  border-radius: 3px;
+  background: grey;
+  position: absolute;
+  left: 0px;
+  width: 100%;
+  top: 0px;
+  height: 100%;
+}
+
+.img {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  width: 150px;
+  height: 200px;
+}
+
+
+.add-card {
+  display: flex;
+  justify-content: center;
+
+  width: 150px;
+  height: 150px;
+  border: 1px solid black;
+}
 
 .icon-back {
   padding-top: 25px;

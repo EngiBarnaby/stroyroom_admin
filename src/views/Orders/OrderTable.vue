@@ -14,6 +14,7 @@
               :items="quantity"
               label="Кол-во"
               v-model="psz"
+              @input="fetchData"
 
           ></v-select>
         </v-col>
@@ -114,7 +115,7 @@ export default {
     },
 
     goToOrderDetails(e, { item }) {
-      this.$router.push({ name: "order-details-review", params: { id: item.id } });
+      this.$router.push({ name: "order-details-review", params: { id: item.id, } });
     },
 
     onSearch(){

@@ -105,6 +105,12 @@ const routes = [
     name : "add-car-type",
     component: () => import("../views/Cars/AddCarType"),
     meta: { requiresAuth: true, },
+  },
+  {
+    path : "/add-nomenclature",
+    name : "add-nomenclature",
+    component : () => import("../views/Nomenclatures/AddNomenclature"),
+    meta: { requiresAuth: true, },
   }
 ]
 

@@ -13,6 +13,7 @@
               :items="quantity"
               label="Кол-во"
               v-model="psz"
+              @input="fetchShops"
 
           ></v-select>
         </v-col>

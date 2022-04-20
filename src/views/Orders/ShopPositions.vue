@@ -9,7 +9,7 @@
       </div>
     </div>
     <v-row>
-      <v-col cols="4" v-for="(product) in shopProducts" :key="product.id">
+      <v-col cols="3" v-for="(product) in shopProducts" :key="product.id">
         <v-card height="500">
           <v-card-subtitle>
             <h6>{{product._nomenclature.name}}</h6>

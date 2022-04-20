@@ -35,12 +35,6 @@
             <div v-if="car.edit === false" >
               <v-card class="pa-4 car-info" height="500" style="overflow: auto;">
                 <div class="edit-btn">
-<!--                  <v-btn icon>-->
-<!--                    <v-icon large>-->
-<!--                      mdi-help-circle-outline-->
-<!--                    </v-icon>-->
-<!--                  </v-btn>-->
-
                   <v-tooltip bottom color="white">
                     <template v-slot:activator="{ on, attrs }">
                       <v-btn icon
