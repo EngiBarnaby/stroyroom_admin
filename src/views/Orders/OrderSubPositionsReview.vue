@@ -125,7 +125,6 @@ export default {
       let { data } = await this.$http.get(`marketplace/manager_sub_order/?order=${this.$route.params.id}`)
       await Promise.all(data.map(item => this.fetchSubOrderPositions(item)))
       this.subOrders.sort((first, second) => first.id - second.id)
-      console.log(this.subOrders)
     },
 
     async fetchSubOrderPositions(subOrder){

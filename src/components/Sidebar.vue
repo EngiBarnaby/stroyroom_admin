@@ -45,6 +45,8 @@ export default {
         {name : "Магазины", icon : "mdi-store", link : "/shops", "key" : "shops"},
         {name : "Мои заказы", icon : "mdi-book-account", link : "/appointment-orders", "key" : "my_orders"},
         {name : "Мои заказы", icon : "mdi-book-account", link : "/appointment-logist-orders", "key" : "my_orders_logist"},
+        {name : "Доставляются", icon : "mdi-truck-delivery-outline", link : "/delivering-table", "key" : "is_delivering"},
+        {name : "Требуют завершения", icon : "mdi-checkbox-multiple-marked-circle-outline", link : "/delivered-orders", "key" : "delivered_orders"},
       ],
     }
   },

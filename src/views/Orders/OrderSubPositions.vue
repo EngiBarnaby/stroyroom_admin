@@ -59,100 +59,143 @@
       </v-card>
     </v-dialog>
 
-    <div class="scroll">
-      <div v-for="subOrder in subOrders" :key="subOrder.id">
-        <v-card class="p-4 mb-4">
-          <v-card-title>
-            Сборка
-          </v-card-title>
-          <v-card-title>
-            {{ subOrder._shop._company }} {{subOrder._shop.address}}
-          </v-card-title>
-          <v-card-subtitle>
-            Позиций сборки
-          </v-card-subtitle>
-          <div v-if="subOrder.positions.length">
-            <v-card-text>
-              <div class="content-container" v-for="item in subOrder.positions" :key="item.id">
-                <div class="custom-carousel">
-                  <v-carousel hide-delimiters
-                              :show-arrows-on-hover="true"
-                              height="auto">
-                    <v-carousel-item
-                        show-arrows-on-hover
-                        hide-delimiters
-                        v-for="(item,i) in item._nomenclature.images"
-                        :key="i"
-                        :src="item"
-                    ></v-carousel-item>
-                  </v-carousel>
-                </div>
-                <div class="item-fields">
-                  <h6>{{item._nomenclature.name}}</h6>
-                  <h6>Количество : {{item.count}}</h6>
-                  <h6>Единица измерения : {{item._nomenclature._measurement.name}}</h6>
-                  <h6>Цена за единицу : {{item._product.cost}} &#8381;</h6>
-                  <h6>Общая цена {{(item.count * item._product.cost ).toFixed(2)}} &#8381;</h6>
-                  <h6>Количество в магазине : {{item._product.count}}</h6>
-                  <v-text-field
-                      :value="item.count"
-                      prepend-icon="mdi-minus-circle-outline"
-                      append-outer-icon="mdi-plus-circle-outline"
-                      type="number"
-                      @input="setValue($event, item)"
-                      @click:prepend="subtract(item)"
-                      @click:append-outer="add(item)"
-                  ></v-text-field>
+    <v-dialog  v-model="createSubOrderDialog" width="600" @click:outside="closeCreateSubOrderDialog">
+      <v-card>
+        <v-card-title>
+          <v-row justify="center">
+            Добавить сборку
+          </v-row>
+        </v-card-title>
+        <v-card-text>
+          <v-row justify="center" class="mt-4">
+            <v-autocomplete
+                background-color="white"
+                v-model="shopSelected"
+                :items="shops"
+                :item-text="item => item._company + ` ${item.address}`"
+                item-value="id"
+                dense
+                label="Магазин"
+                clearable
+                no-data-text="Нет доступных данных"
+            />
+          </v-row>
+        </v-card-text>
+        <v-card-actions>
+          <v-btn outlined color="error" @click="closeCreateSubOrderDialog">
+            Отмена
+          </v-btn>
+          <v-btn outlined color="success" @click="addSubOrder">
+              Создать
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
 
-                  <v-tooltip bottom>
-                    <template v-slot:activator="{ on, attrs }">
-                      <v-btn
-                          v-bind="attrs"
-                          v-on="on"
-                          icon
-                          @click="openDeleteDialog(item, subOrder)"
-                      >
-                        <v-icon
-                            color="error"
-                        >
-                          mdi-trash-can-outline
-                        </v-icon>
-                      </v-btn>
-                    </template>
-                    <span>Удалить позицию</span>
-                  </v-tooltip>
-                </div>
+    <div class="scroll">
+      <v-expansion-panels v-for="subOrder in subOrders" :key="subOrder.id">
+        <v-expansion-panel>
+          <v-expansion-panel-header>
+            {{ subOrder._shop._company }} {{subOrder._shop.address}}
+          </v-expansion-panel-header>
+          <v-expansion-panel-content>
+            <v-card class="p-4 mb-4">
+  <!--            <v-card-title>-->
+  <!--              Сборка-->
+  <!--            </v-card-title>-->
+  <!--            <v-card-title>-->
+  <!--              {{ subOrder._shop._company }} {{subOrder._shop.address}}-->
+  <!--            </v-card-title>-->
+  <!--            <v-card-subtitle>-->
+  <!--              Позиций сборки-->
+  <!--            </v-card-subtitle>-->
+              <div v-if="subOrder.positions.length">
+                <v-card-text>
+                  <div class="content-container" v-for="item in subOrder.positions" :key="item.id">
+                    <div class="custom-carousel">
+                      <v-carousel hide-delimiters
+                                  :show-arrows-on-hover="true"
+                                  height="auto">
+                        <v-carousel-item
+                            show-arrows-on-hover
+                            hide-delimiters
+                            v-for="(item,i) in item._nomenclature.images"
+                            :key="i"
+                            :src="item"
+                        ></v-carousel-item>
+                      </v-carousel>
+                    </div>
+                    <div class="item-fields">
+                      <h6>{{item._nomenclature.name}}</h6>
+                      <h6>Количество : {{item.count}}</h6>
+                      <h6>Единица измерения : {{item._nomenclature._measurement.name}}</h6>
+                      <h6>Цена за единицу : {{item._product.cost}} &#8381;</h6>
+                      <h6>Общая цена {{(item.count * item._product.cost ).toFixed(2)}} &#8381;</h6>
+                      <h6>Количество в магазине : {{item._product.count}}</h6>
+                      <v-text-field
+                          :value="item.count"
+                          prepend-icon="mdi-minus-circle-outline"
+                          append-outer-icon="mdi-plus-circle-outline"
+                          type="number"
+                          @input="setValue($event, item)"
+                          @click:prepend="subtract(item)"
+                          @click:append-outer="add(item)"
+                      ></v-text-field>
+
+                      <v-tooltip bottom>
+                        <template v-slot:activator="{ on, attrs }">
+                          <v-btn
+                              v-bind="attrs"
+                              v-on="on"
+                              icon
+                              @click="openDeleteDialog(item, subOrder)"
+                          >
+                            <v-icon
+                                color="error"
+                            >
+                              mdi-trash-can-outline
+                            </v-icon>
+                          </v-btn>
+                        </template>
+                        <span>Удалить позицию</span>
+                      </v-tooltip>
+                    </div>
+                  </div>
+                  <v-divider></v-divider>
+                </v-card-text>
+                  <v-btn outlined color="info" v-if="!subOrder.manager_approve" @click="openShopProducts(subOrder)">
+                    Добавить позицию в сборку
+                  </v-btn>
+                  <v-btn outlined color="success" v-if="!subOrder.manager_approve" class="ml-4" @click="openApproveDialog(subOrder)">
+                    Подтвердить сборку
+                  </v-btn>
+                  <v-btn outlined color="error" v-if="!subOrder.manager_approve" class="mt-4" @click="openDeleteSubOrderDialog(subOrder)">
+                    Удалить сборку
+                  </v-btn>
+                <h5 v-if="subOrder.manager_approve" class="green--text">
+                  Сборка подтверждена
+                </h5>
               </div>
-              <v-divider></v-divider>
-            </v-card-text>
-              <v-btn outlined color="info" v-if="!subOrder.manager_approve" @click="openShopProducts(subOrder)">
-                Добавить позицию в сборку
-              </v-btn>
-              <v-btn outlined color="success" v-if="!subOrder.manager_approve" class="ml-4" @click="openApproveDialog(subOrder)">
-                Подтвердить сборку
-              </v-btn>
-              <v-btn outlined color="error" v-if="!subOrder.manager_approve" class="mt-4" @click="openDeleteSubOrderDialog(subOrder)">
-                Удалить сборку
-              </v-btn>
-            <h5 v-if="subOrder.manager_approve" class="green--text">
-              Сборка подтверждена
-            </h5>
-          </div>
-          <div v-else>
-            <v-card-text>
-              <h5>
-                Сборка пуста
-              </h5>
-              <v-btn outlined color="info" @click="openShopProducts(subOrder)">
-                Добавить позицию в сборку
-              </v-btn>
-              <v-btn outlined color="error" class="ml-4" @click="openDeleteSubOrderDialog(subOrder)">
-                Удалить сборку
-              </v-btn>
-            </v-card-text>
-          </div>
-        </v-card>
-      </div>
+              <div v-else>
+                <v-card-text>
+                  <h5>
+                    Сборка пуста
+                  </h5>
+                  <v-btn outlined color="info" @click="openShopProducts(subOrder)">
+                    Добавить позицию в сборку
+                  </v-btn>
+                  <v-btn outlined color="error" class="ml-4" @click="openDeleteSubOrderDialog(subOrder)">
+                    Удалить сборку
+                  </v-btn>
+                </v-card-text>
+              </div>
+            </v-card>
+          </v-expansion-panel-content>
+        </v-expansion-panel>
+      </v-expansion-panels>
+      <v-row justify="end" class="mt-4 mr-4">
+        <v-btn outlined color="success" @click="createSubOrderDialog = true">Добавить сборку</v-btn>
+      </v-row>
     </div>
   </div>
 </template>
@@ -168,14 +211,17 @@ export default {
 
   data(){
     return {
+      createSubOrderDialog : false,
       deleteSubOrderDialog : false,
       dialogApprove : false,
       shopProductsDialog : false,
       deleteDialog : false,
 
+      shops : [],
       subOrders : [],
       orderPositions : [],
 
+      shopSelected : {},
       currentSuborder : {},
       currentItem : {},
       currentSubOrder : {},
@@ -195,6 +241,27 @@ export default {
   },
 
   methods : {
+
+    async addSubOrder(){
+      let data = {
+        "shop" : this.shopSelected,
+        "order" : this.$route.params.id,
+
+      }
+      try{
+        await this.$http.post('marketplace/manager_sub_order/', data)
+        this.subOrders = []
+        await this.fetchSubOrders()
+      }
+      catch (e) {
+        console.log(e)
+      }
+    },
+
+    closeCreateSubOrderDialog(){
+      this.shopSelected = {}
+      this.createSubOrderDialog = false
+    },
 
     closeDeleteSubOrderDialog(){
       this.currentSubOrder = {}
@@ -216,6 +283,12 @@ export default {
       try{
         await this.$http.get(`marketplace/manager_sub_order/${this.currentSubOrder.id}/approve_sub_order_by_order_manager/`)
         // this.subOrders = this.subOrders.filter(el => el.id !== this.currentSubOrder.id)
+        this.subOrders = this.subOrders.map(el => {
+          if(el.id === this.currentSubOrder.id){
+            el.manager_approve = true
+          }
+          return el
+        })
         this.closeApproveDialog()
       }
       catch (e){
@@ -268,7 +341,13 @@ export default {
     },
 
     setValue(e, item){
-      item.count = e
+      if(e > item._product.count){
+        item.count = item._product.count
+      }
+      else{
+        item.count = e
+      }
+      this.setItemCount(item)
     },
 
     subtract(item){
@@ -277,13 +356,23 @@ export default {
       else {
         item.count = 0
       }
+      this.setItemCount(item)
     },
 
     add(item){
       item.count += 1
+      this.setItemCount(item)
     },
 
 
+    async setItemCount(item){
+      await this.$http.post(`marketplace/manager_sub_order_positions/${item.id}/change_count/`, {"count" : item.count})
+    },
+
+    async fetchShops(){
+      let { data } = await this.$http.get("marketplace/shop/get_all_shops/")
+      this.shops = data
+    },
 
     async fetchSubOrders(){
       let { data } = await this.$http.get(`marketplace/manager_sub_order/?order=${this.$route.params.id}`)
@@ -301,11 +390,13 @@ export default {
 
   mounted(){
     this.fetchSubOrders()
+    this.fetchShops()
   }
 }
 </script>
 
 <style scoped>
+
 
 .scroll {
   height: 100vh;
@@ -342,8 +433,5 @@ export default {
   width: 150px;
 }
 
-.v-text-field {
-  width: 130px;
-}
 
 </style>

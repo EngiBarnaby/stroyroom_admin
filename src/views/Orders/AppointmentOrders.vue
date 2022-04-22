@@ -55,6 +55,36 @@
           </p>
         </template>
 
+        <template  v-slot:[`item.delivery_type`]='{ item }'>
+          <div v-if="item.delivery_type === 'pickup_min_points'">
+            <p>Наименьшее количество точек (самовывоз)</p>
+          </div>
+
+          <div v-if="item.delivery_type === 'pickup_nearest_points'">
+            <p>Ближайший точки (самовывоз)</p>
+          </div>
+
+          <div v-if="item.delivery_type === 'pickup_min_cost'">
+            <p>Лучшая цена (самовывоз)</p>
+          </div>
+
+          <div v-if="item.delivery_type === 'pickup_min_points'">
+            <p>Наименьшее количество точек (самовывоз)</p>
+          </div>
+
+          <div v-if="item.delivery_type === 'delivery_today'">
+            <p>Лучшая цена (доставка)</p>
+          </div>
+
+          <div v-if="item.delivery_type === 'delivery_starting_tomorrow'">
+            <p>Меньше ехать (доставка)</p>
+          </div>
+
+          <div v-if="item.delivery_type === 'delivery_min_cost'">
+            <p>Быстро (доставка)</p>
+          </div>
+        </template>
+
 
         <template v-slot:no-data>
           <p>Нет данных</p>
@@ -85,6 +115,7 @@ export default {
       tableHeaders : [
         { text: "ID", value: "id"},
         {text : "адрес" , value : "_address"},
+        {text : "Способ доставки", value : "delivery_type"},
         { text: "Примерное время", value: "est_time" },
         {text: "Тип оплаты", value : "payment_method"},
         {text : "Комментарий", value : "comment"},

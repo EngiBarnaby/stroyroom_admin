@@ -128,7 +128,7 @@ export default {
     },
 
     async fetchData(){
-      let { data } = await this.$http.get(`marketplace/manager_appointment_orders/${this.$route.params.id}/`)
+      let { data } = await this.$http.get(`marketplace/manager_delivered_orders/${this.$route.params.id}/`)
       this.order = data
     },
 
@@ -144,3 +144,4 @@ export default {
 
 
 </style>
+

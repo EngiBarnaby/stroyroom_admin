@@ -14,7 +14,7 @@
               :items="quantity"
               label="Кол-во"
               v-model="psz"
-              @input="fetchData"
+              @input="fetchDeliveredOrders"
 
           ></v-select>
         </v-col>
@@ -25,7 +25,7 @@
               label="Поиск"
               placeholder="Поиск"
               v-model="search"
-              v-debounce:1s="onSearch"
+              v-debounce:1s="fetchDeliveredOrders"
           >
           </v-text-field>
         </v-col>
@@ -57,19 +57,19 @@
 
         <template  v-slot:[`item.delivery_type`]='{ item }'>
           <div v-if="item.delivery_type === 'pickup_min_points'">
-            <p>Наименьшее количество точек</p>
+            <p>Наименьшее количество точек (самовывоз)</p>
           </div>
 
           <div v-if="item.delivery_type === 'pickup_nearest_points'">
-            <p>Ближайший точки (самовыаоз)</p>
+            <p>Ближайший точки (самовывоз)</p>
           </div>
 
           <div v-if="item.delivery_type === 'pickup_min_cost'">
-            <p>Лучшая цена (самовыаоз)</p>
+            <p>Лучшая цена (самовывоз)</p>
           </div>
 
           <div v-if="item.delivery_type === 'pickup_min_points'">
-            <p>Наименьшее количество точек (самовыаоз)</p>
+            <p>Наименьшее количество точек (самовывоз)</p>
           </div>
 
           <div v-if="item.delivery_type === 'delivery_today'">
@@ -86,9 +86,9 @@
         </template>
 
         <template  v-slot:[`item.actions`]='{ item }'>
-          <div v-if="item.order_manager === null" class="appoint-btn">
-            <v-btn @click="appointOrder(item)" outlined color="info">
-              Взять в работу
+          <div class="appoint-btn">
+            <v-btn outlined color="info" @click="completeOrder(item)">
+              Завершить
             </v-btn>
           </div>
         </template>
@@ -104,7 +104,7 @@
             v-model="page"
             :length="length"
             :total-visible="7"
-            @input="fetchData"
+            @input="fetchDeliveredOrders"
         ></v-pagination>
       </div>
 
@@ -114,7 +114,7 @@
 
 <script>
 export default {
-  name : "OrderTable",
+  name: "DeliveredOrder",
 
   data(){
     return {
@@ -123,12 +123,13 @@ export default {
         { text: "ID", value: "id"},
         {text : "адрес" , value : "_address"},
         {text : "Способ доставки", value : "delivery_type"},
-        {text: "Примерное время", value: "est_time" },
+        { text: "Примерное время", value: "est_time" },
         {text: "Тип оплаты", value : "payment_method"},
         {text : "Комментарий", value : "comment"},
         {text : "Сумма", value : "cost"},
         {text: 'Действия', value: 'actions'},
       ],
+
       page : 1,
       psz : 50,
       quantity : [10, 20, 30, 40, 50],
@@ -140,21 +141,21 @@ export default {
 
   methods : {
 
-   async appointOrder(item){
-      await this.$http.get(`marketplace/manager_order/${item.id}/appoint_order/`)
-      this.orders = this.orders.filter(el => el.id !== item.id)
-    },
-
     goToOrderDetails(e, { item }) {
       this.$router.push({ name: "order-details-review", params: { id: item.id, } });
     },
 
-    onSearch(){
-      this.fetchData()
+    async completeOrder(){
+      try{
+        await this.$http.get(`marketplace/manager_delivered_orders`)
+      }
+      catch (e) {
+        console.log(e)
+      }
     },
 
-    async fetchData(){
-      let {data} = await this.$http.get(`marketplace/manager_order/?psz=${this.psz}&page=${this.page}&search=${this.search}`)
+   async fetchDeliveredOrders(){
+      let { data } = await this.$http.get(`marketplace/manager_delivered_orders/?psz=${this.psz}&page=${this.page}&search=${this.search}`)
       this.count = data.count
       this.orders = data.results
     }
@@ -167,20 +168,11 @@ export default {
   },
 
   mounted() {
-    this.fetchData()
+    this.fetchDeliveredOrders()
   }
 }
 </script>
 
 <style scoped>
-
-.header-text {
-  padding: 10px;
-}
-
-.appoint-btn {
-  display: flex;
-  justify-content: center;
-}
 
 </style>

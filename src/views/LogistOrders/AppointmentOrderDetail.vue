@@ -91,7 +91,7 @@ export default {
         if(this.order.delivery_agreed){
           this.carSelected = true
         }
-        this.$router.push("/appointment-logist-orders")
+        // this.$router.push("/appointment-logist-orders")
       }
       catch (e) {
         console.log(e)

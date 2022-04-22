@@ -69,13 +69,18 @@ export default {
 
   methods : {
 
+    async setItemCount(item){
+      await this.$http.post(`marketplace/manager_order_positions/${item.id}/change_count/`, {"count" : item.count})
+    },
+
     async fetchPositions(){
       let {data} = await this.$http.get(`marketplace/manager_order_positions/?order=${this.$route.params.id}`)
       this.positions = data
     },
 
     setValue(e, item){
-      item.count = e
+      item.count = +e
+      this.setItemCount(item)
     },
 
     subtract(item){
@@ -84,10 +89,12 @@ export default {
       else {
         item.count = 0
       }
+      this.setItemCount(item)
     },
 
     add(item){
       item.count += 1
+      this.setItemCount(item)
     },
 
   },

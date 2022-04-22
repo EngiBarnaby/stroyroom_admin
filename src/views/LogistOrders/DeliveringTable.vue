@@ -6,6 +6,22 @@
       </v-icon>
     </div>
 
+    <v-dialog v-model="approveDialog" width="500" @click:outside="closeApproveDialog">
+      <v-card>
+        <v-card-title>
+          Вы действитель хотите подтвердить доставку?
+        </v-card-title>
+        <v-card-actions>
+          <v-btn outlined color="error" @click="closeApproveDialog">
+            Нет
+          </v-btn>
+          <v-btn outlined color="success" @click="approveDelivery">
+            Да
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
     <v-container>
 
       <v-row >
@@ -14,7 +30,6 @@
               :items="quantity"
               label="Кол-во"
               v-model="psz"
-              @input="fetchData"
 
           ></v-select>
         </v-col>
@@ -25,7 +40,7 @@
               label="Поиск"
               placeholder="Поиск"
               v-model="search"
-              v-debounce:1s="onSearch"
+              v-debounce:1s="fetchDeliveringOrder"
           >
           </v-text-field>
         </v-col>
@@ -38,7 +53,6 @@
           hide-default-header
           :hide-default-footer="true"
           class="elevation-1 table-bordered"
-          @dblclick:row="goToOrderDetails"
       >
 
         <template v-slot:header="{ props }">
@@ -55,46 +69,16 @@
           </p>
         </template>
 
-        <template  v-slot:[`item.delivery_type`]='{ item }'>
-          <div v-if="item.delivery_type === 'pickup_min_points'">
-            <p>Наименьшее количество точек</p>
-          </div>
-
-          <div v-if="item.delivery_type === 'pickup_nearest_points'">
-            <p>Ближайший точки (самовыаоз)</p>
-          </div>
-
-          <div v-if="item.delivery_type === 'pickup_min_cost'">
-            <p>Лучшая цена (самовыаоз)</p>
-          </div>
-
-          <div v-if="item.delivery_type === 'pickup_min_points'">
-            <p>Наименьшее количество точек (самовыаоз)</p>
-          </div>
-
-          <div v-if="item.delivery_type === 'delivery_today'">
-            <p>Лучшая цена (доставка)</p>
-          </div>
-
-          <div v-if="item.delivery_type === 'delivery_starting_tomorrow'">
-            <p>Меньше ехать (доставка)</p>
-          </div>
-
-          <div v-if="item.delivery_type === 'delivery_min_cost'">
-            <p>Быстро (доставка)</p>
-          </div>
-        </template>
-
         <template  v-slot:[`item.actions`]='{ item }'>
-          <div v-if="item.order_manager === null" class="appoint-btn">
-            <v-btn @click="appointOrder(item)" outlined color="info">
-              Взять в работу
+          <div>
+            <v-btn outlined color="info" @click="openApproveDialog(item)">
+              Подтвердить доставку
             </v-btn>
           </div>
         </template>
 
         <template v-slot:no-data>
-          <p>Нет данных</p>
+          <p>Нет заказов</p>
         </template>
 
       </v-data-table>
@@ -104,7 +88,7 @@
             v-model="page"
             :length="length"
             :total-visible="7"
-            @input="fetchData"
+            @input="fetchDeliveringOrder"
         ></v-pagination>
       </div>
 
@@ -114,20 +98,25 @@
 
 <script>
 export default {
-  name : "OrderTable",
+  name: "DeliveringTable",
 
   data(){
     return {
+      approveDialog : false,
+      currentOrder : {},
+
       orders : [],
+      currentItem : {},
+
       tableHeaders : [
         { text: "ID", value: "id"},
         {text : "адрес" , value : "_address"},
-        {text : "Способ доставки", value : "delivery_type"},
-        {text: "Примерное время", value: "est_time" },
+        { text: "Примерное время", value: "est_time" },
         {text: "Тип оплаты", value : "payment_method"},
         {text : "Комментарий", value : "comment"},
         {text : "Сумма", value : "cost"},
-        {text: 'Действия', value: 'actions'},
+        {text : "Статус", value : "order_status"},
+        { text: 'Действия', value: 'actions'},
       ],
       page : 1,
       psz : 50,
@@ -140,24 +129,33 @@ export default {
 
   methods : {
 
-   async appointOrder(item){
-      await this.$http.get(`marketplace/manager_order/${item.id}/appoint_order/`)
-      this.orders = this.orders.filter(el => el.id !== item.id)
+    closeApproveDialog(){
+      this.currentOrder = {}
+      this.approveDialog = false
     },
 
-    goToOrderDetails(e, { item }) {
-      this.$router.push({ name: "order-details-review", params: { id: item.id, } });
+    openApproveDialog(order){
+      this.currentOrder = order
+      this.approveDialog = true
     },
 
-    onSearch(){
-      this.fetchData()
+    async approveDelivery(){
+      try{
+        await this.$http.get(`marketplace/logist_delivering_order/${this.currentOrder.id}/approve_delivery/`)
+        await this.fetchDeliveringOrder()
+        this.closeApproveDialog()
+      }
+      catch (e) {
+        console.log(e)
+      }
     },
 
-    async fetchData(){
-      let {data} = await this.$http.get(`marketplace/manager_order/?psz=${this.psz}&page=${this.page}&search=${this.search}`)
+    async fetchDeliveringOrder(){
+      let { data } = await this.$http.get(`marketplace/logist_delivering_order/?psz=${this.psz}&page=${this.page}&search=${this.search}`)
       this.count = data.count
       this.orders = data.results
-    }
+    },
+
   },
 
   computed : {
@@ -167,20 +165,11 @@ export default {
   },
 
   mounted() {
-    this.fetchData()
+    this.fetchDeliveringOrder()
   }
 }
 </script>
 
 <style scoped>
-
-.header-text {
-  padding: 10px;
-}
-
-.appoint-btn {
-  display: flex;
-  justify-content: center;
-}
 
 </style>

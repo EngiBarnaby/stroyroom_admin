@@ -111,7 +111,19 @@ const routes = [
     name : "add-nomenclature",
     component : () => import("../views/Nomenclatures/AddNomenclature"),
     meta: { requiresAuth: true, },
-  }
+  },
+  {
+    path : "/delivering-table",
+    name : "delivering-table",
+    component : () => import("../views/LogistOrders/DeliveringTable"),
+    meta: { requiresAuth: true, },
+  },
+  {
+    path : "/delivered-orders",
+    name : "delivered-orders",
+    component : () => import("../views/Orders/DeliveredOrder"),
+    meta: { requiresAuth: true, },
+  },
 ]
 
 const router = new VueRouter({
