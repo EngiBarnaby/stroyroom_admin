@@ -154,15 +154,19 @@
                   </div>
                   <v-divider></v-divider>
                 </v-card-text>
-                  <v-btn outlined color="info" v-if="!subOrder.manager_approve" @click="openShopProducts(subOrder)">
-                    Добавить позицию в сборку
-                  </v-btn>
-                  <v-btn outlined color="success" v-if="!subOrder.manager_approve" class="ml-4" @click="openApproveDialog(subOrder)">
-                    Подтвердить сборку
-                  </v-btn>
-                  <v-btn outlined color="error" v-if="!subOrder.manager_approve" class="ml-4" @click="openDeleteSubOrderDialog(subOrder)">
-                    Удалить сборку
-                  </v-btn>
+                  <v-row>
+                    <v-btn outlined color="info" v-if="!subOrder.manager_approve" @click="openShopProducts(subOrder)">
+                      Добавить позицию в сборку
+                    </v-btn>
+                    <v-btn outlined color="success" v-if="!subOrder.manager_approve" class="ml-4" @click="openApproveDialog(subOrder)">
+                      Подтвердить сборку
+                    </v-btn>
+                  </v-row>
+                  <v-row class="mt-4" justify="center">
+                    <v-btn outlined color="error" v-if="!subOrder.manager_approve" class="ml-4" @click="openDeleteSubOrderDialog(subOrder)">
+                      Удалить сборку
+                    </v-btn>
+                  </v-row>
                 <h5 v-if="subOrder.manager_approve" class="green--text">
                   Сборка подтверждена
                 </h5>

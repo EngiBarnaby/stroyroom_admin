@@ -2,12 +2,13 @@
   <div>
 
     <v-dialog width="1500" v-model="addPositionDialog">
-      <v-card>
+      <v-card class="pa-4">
         <v-card-title>
           <v-row justify="center">
             Добавление позиций в заказ
           </v-row>
         </v-card-title>
+        <AddProductsWindow @addProduct="onAddProduct" />
       </v-card>
     </v-dialog>
 
@@ -69,6 +70,7 @@
                       v-bind="attrs"
                       v-on="on"
                       icon
+                      @click="openDeleteDialog(position)"
                   >
                     <v-icon
                         color="error"
@@ -90,8 +92,11 @@
 </template>
 
 <script>
+import AddProductsWindow from "@/views/Orders/AddProductsWindow";
 export default {
   name: "OrderPositionGeneral",
+
+  components : {AddProductsWindow},
 
   data(){
     return {
@@ -106,8 +111,18 @@ export default {
 
   methods : {
 
-    async addPosition(){
-
+    async onAddProduct(product){
+      let formData = {
+        order : this.$route.params.id,
+        cost : product.cost,
+        count : product.currentCount,
+        shop : product.shop,
+        nomenclature : product.nomenclature,
+        product : product.id
+      }
+      await this.$http.post(`marketplace/manager_simple_order_positions/`, formData)
+      await this.fetchPositions()
+      this.addPositionDialog = false
     },
 
     async deletePosition(){
