@@ -124,6 +124,12 @@ const routes = [
     component : () => import("../views/Orders/DeliveredOrder"),
     meta: { requiresAuth: true, },
   },
+  {
+    path : "/delivered-order-detail/:id",
+    name : "delivered-order-detail",
+    component : () => import("../views/Orders/DeliveredOrderDetails"),
+    meta: { requiresAuth: true, },
+  },
 ]
 
 const router = new VueRouter({

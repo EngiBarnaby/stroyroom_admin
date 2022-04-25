@@ -142,7 +142,7 @@ export default {
   methods : {
 
     goToOrderDetails(e, { item }) {
-      this.$router.push({ name: "order-details-review", params: { id: item.id, } });
+      this.$router.push({ name: "delivered-order-detail", params: { id: item.id, } });
     },
 
     async completeOrder(){

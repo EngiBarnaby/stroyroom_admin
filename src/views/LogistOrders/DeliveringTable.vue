@@ -6,7 +6,7 @@
       </v-icon>
     </div>
 
-    <v-dialog v-model="approveDialog" width="500" @click:outside="closeApproveDialog">
+    <v-dialog v-model="approveDialog" width="550" @click:outside="closeApproveDialog">
       <v-card>
         <v-card-title>
           Вы действитель хотите подтвердить доставку?

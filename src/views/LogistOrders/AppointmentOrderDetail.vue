@@ -1,5 +1,18 @@
 <template>
   <div v-if="!isFetching">
+
+    <v-dialog width="500" v-model="cancelOrderDialog">
+      <v-card>
+        <v-card-title>
+          Вы уверены, что хотите отменить заказ?
+        </v-card-title>
+        <v-card-actions>
+          <v-btn outlined color="error" @click="cancelOrderDialog = false">Нет</v-btn>
+          <v-btn outlined color="success" @click="cancelOrder">Да</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
     <div class="icon-back">
       <v-icon x-large @click="$router.go(-1)">
         mdi-arrow-left
@@ -26,6 +39,16 @@
               </template>
             </h6>
             <h6>Сумма : {{order.cost}} &#8381;</h6>
+
+            <v-card-actions>
+              <v-btn
+                  outlined
+                  color="error"
+                  @click="cancelOrderDialog = true"
+              >
+                Отменить заявку
+              </v-btn>
+            </v-card-actions>
 
           </v-card>
         </v-col>
@@ -62,6 +85,8 @@ export default {
 
   data(){
     return {
+      cancelOrderDialog : false,
+
       isFetching : true,
       successSnackbar : false,
 
@@ -72,6 +97,12 @@ export default {
   },
 
   methods : {
+
+
+    async cancelOrder(){
+      await this.$http.get(`marketplace/logist_appointment_orders/${this.order.id}/set_canceled/`)
+      this.$router.push("/appointment-logist-orders")
+    },
 
     async appointCar(car){
       try{

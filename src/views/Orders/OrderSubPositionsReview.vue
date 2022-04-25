@@ -3,17 +3,22 @@
 
 
     <div class="scroll">
-      <div v-for="subOrder in subOrders" :key="subOrder.id">
-        <v-card class="p-4 mb-4">
-          <v-card-title>
-            Сборка
-          </v-card-title>
-          <v-card-title>
+      <v-expansion-panels v-for="subOrder in subOrders" :key="subOrder.id">
+        <v-expansion-panel>
+          <v-expansion-panel-header>
             {{ subOrder._shop._company }} {{subOrder._shop.address}}
-          </v-card-title>
-          <v-card-subtitle>
-            Позиций сборки
-          </v-card-subtitle>
+          </v-expansion-panel-header>
+          <v-expansion-panel-content>
+            <v-card class="p-4 mb-4">
+<!--          <v-card-title>-->
+<!--            Сборка-->
+<!--          </v-card-title>-->
+<!--          <v-card-title>-->
+<!--            {{ subOrder._shop._company }} {{subOrder._shop.address}}-->
+<!--          </v-card-title>-->
+<!--          <v-card-subtitle>-->
+<!--            Позиций сборки-->
+<!--          </v-card-subtitle>-->
           <div v-if="subOrder.positions.length">
             <v-card-text>
               <div class="content-container" v-for="item in subOrder.positions" :key="item.id">
@@ -52,7 +57,9 @@
             </v-card-text>
           </div>
         </v-card>
-      </div>
+          </v-expansion-panel-content>
+        </v-expansion-panel>
+      </v-expansion-panels>
     </div>
   </div>
 </template>

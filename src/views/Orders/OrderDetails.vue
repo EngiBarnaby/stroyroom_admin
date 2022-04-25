@@ -1,6 +1,30 @@
 <template>
   <div>
 
+    <v-dialog width="500" v-model="cancelOrderDialog">
+      <v-card>
+        <v-card-title>
+          Вы уверены, что хотите отменить заказ?
+        </v-card-title>
+        <v-card-actions>
+          <v-btn
+            outlined
+            color="error"
+            @click="cancelOrderDialog = false"
+          >
+            Нет
+          </v-btn>
+          <v-btn
+              outlined
+              color="success"
+              @click="cancelOrder"
+          >
+            Да
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
     <v-dialog width="500" v-model="approveOrderDialog">
       <v-card>
         <v-card-title>
@@ -45,6 +69,15 @@
               </h6>
             </v-card-text>
             <v-card-actions>
+
+              <v-btn
+                  outlined
+                  color="error"
+                  @click="cancelOrderDialog = true"
+              >
+                Отменить заявку
+              </v-btn>
+
               <v-btn outlined
                      color="success"
                      @click="approveOrderDialog = true"
@@ -104,6 +137,7 @@ export default {
 
       allSubOrdersApproved : false,
 
+      cancelOrderDialog : false,
       approveOrderDialog : false,
       deleteDialog : false,
 
@@ -117,6 +151,11 @@ export default {
   },
 
   methods : {
+
+    async cancelOrder(){
+      await this.$http.get(`marketplace/manager_appointment_orders/${this.order.id}/set_canceled/`)
+      this.$router.push("/appointment-orders")
+    },
 
     changeStatus(status){
       this.allSubOrdersApproved = status
