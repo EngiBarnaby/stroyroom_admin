@@ -29,7 +29,6 @@
             <h6>Адрес : {{order._address}}</h6>
             <h6>Телефон : {{order.phone}}</h6>
             <h6>Статус : {{order.order_status}}</h6>
-            <h6>Адрес : {{order._address}}</h6>
             <h6>Оплата сразу :
               <template v-if="order.paid_right_away === true" >
                 Да

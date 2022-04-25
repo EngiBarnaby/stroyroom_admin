@@ -100,15 +100,6 @@
           </v-expansion-panel-header>
           <v-expansion-panel-content>
             <v-card class="p-4 mb-4">
-  <!--            <v-card-title>-->
-  <!--              Сборка-->
-  <!--            </v-card-title>-->
-  <!--            <v-card-title>-->
-  <!--              {{ subOrder._shop._company }} {{subOrder._shop.address}}-->
-  <!--            </v-card-title>-->
-  <!--            <v-card-subtitle>-->
-  <!--              Позиций сборки-->
-  <!--            </v-card-subtitle>-->
               <div v-if="subOrder.positions.length">
                 <v-card-text>
                   <div class="content-container" v-for="item in subOrder.positions" :key="item.id">
@@ -169,7 +160,7 @@
                   <v-btn outlined color="success" v-if="!subOrder.manager_approve" class="ml-4" @click="openApproveDialog(subOrder)">
                     Подтвердить сборку
                   </v-btn>
-                  <v-btn outlined color="error" v-if="!subOrder.manager_approve" class="mt-4" @click="openDeleteSubOrderDialog(subOrder)">
+                  <v-btn outlined color="error" v-if="!subOrder.manager_approve" class="ml-4" @click="openDeleteSubOrderDialog(subOrder)">
                     Удалить сборку
                   </v-btn>
                 <h5 v-if="subOrder.manager_approve" class="green--text">

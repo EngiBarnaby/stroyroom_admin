@@ -125,6 +125,7 @@ export default {
         {text : "Способ доставки", value : "delivery_type"},
         { text: "Примерное время", value: "est_time" },
         {text: "Тип оплаты", value : "payment_method"},
+        {text : "Статус", value : "order_status"},
         {text : "Комментарий", value : "comment"},
         {text : "Сумма", value : "cost"},
         {text: 'Действия', value: 'actions'},
