@@ -1,5 +1,8 @@
 <template>
   <div class="main-wrapper">
+    <v-btn outlined color="success" class="mb-6 mt-4">
+      Добавить позицию
+    </v-btn>
     <div v-for="(position, index) in positions" :key="index">
       <div class="position">
         <div class="content-container">
