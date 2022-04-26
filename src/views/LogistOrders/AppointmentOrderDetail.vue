@@ -18,6 +18,7 @@
         mdi-arrow-left
       </v-icon>
     </div>
+
     <v-container>
       <v-row>
         <v-col cols="5">
@@ -52,15 +53,42 @@
           </v-card>
         </v-col>
         <v-col cols="7">
-          <v-card>
-            <v-card-title>
-              Назначение машины
-            </v-card-title>
-            <AppointmentCars :carSelected="carSelected" @selectCar="appointCar"/>
-          </v-card>
+          <v-tabs
+              v-model="tab"
+              background-color="transparent"
+              color="basil"
+              grow
+          >
+            <v-tab
+                v-for="item in items"
+                :key="item"
+            >
+              {{ item }}
+            </v-tab>
+          </v-tabs>
+
+          <v-tabs-items v-model="tab">
+            <v-tab-item
+            >
+              <v-card>
+                <v-card-title>
+                  Назначение машины
+                </v-card-title>
+                <AppointmentCars :carSelected="carSelected" @selectCar="appointCar"/>
+              </v-card>
+            </v-tab-item>
+
+            <v-tab-item
+            >
+              <Comments />
+            </v-tab-item>
+
+          </v-tabs-items>
+
         </v-col>
       </v-row>
     </v-container>
+
 
     <v-snackbar
         outlined
@@ -76,14 +104,21 @@
 </template>
 
 <script>
+import Comments from "@/components/Comments";
 import AppointmentCars from "@/views/Cars/AppointmentCars";
 export default {
   name: "AppointmentOrderDetail",
 
-  components : { AppointmentCars },
+  components : { AppointmentCars, Comments },
 
   data(){
     return {
+
+      tab: 0,
+      items: [
+        "Машины", "Комментарии",
+      ],
+
       cancelOrderDialog : false,
 
       isFetching : true,

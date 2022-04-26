@@ -56,7 +56,7 @@
       >
 
         <template v-slot:header="{ props }">
-          <th  v-for="(head, i) in props.headers" class="header-text" :key="i" style="{font-size: 8px}">{{ head.text }}</th>
+          <th  v-for="(head, i) in props.headers"  :key="i" style="{font-size: 5px !important}">{{ head.text }}</th>
         </template>
 
 
@@ -72,7 +72,7 @@
         <template  v-slot:[`item.actions`]='{ item }'>
           <div>
             <v-btn outlined color="info" @click="openApproveDialog(item)">
-              Подтвердить доставку
+              Подтвердить
             </v-btn>
           </div>
         </template>
@@ -169,6 +169,7 @@ export default {
   }
 }
 </script>
+
 
 <style scoped>
 

@@ -154,7 +154,7 @@
                   </div>
                   <v-divider></v-divider>
                 </v-card-text>
-                  <v-row>
+                  <v-row justify="center">
                     <v-btn outlined color="info" v-if="!subOrder.manager_approve" @click="openShopProducts(subOrder)">
                       Добавить позицию в сборку
                     </v-btn>

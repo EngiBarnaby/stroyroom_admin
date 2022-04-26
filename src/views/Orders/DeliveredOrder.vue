@@ -1,5 +1,18 @@
 <template>
   <div>
+
+    <v-dialog v-model="approveDialog" width="550" @click:outside="closeApproveDialog">
+      <v-card>
+        <v-card-title>
+          Вы уверены, что хотите завершить заявку?
+        </v-card-title>
+        <v-card-actions>
+          <v-btn outlined color="error" @click="closeApproveDialog">Нет</v-btn>
+          <v-btn outlined color="success" @click="completeOrder">Да</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
     <div class="icon-back">
       <v-icon x-large @click="$router.go(-1)">
         mdi-arrow-left
@@ -87,7 +100,7 @@
 
         <template  v-slot:[`item.actions`]='{ item }'>
           <div class="appoint-btn">
-            <v-btn outlined color="info" @click="completeOrder(item)">
+            <v-btn outlined color="info" @click="openApproveDialog(item)">
               Завершить
             </v-btn>
           </div>
@@ -118,6 +131,10 @@ export default {
 
   data(){
     return {
+      approveDialog : false,
+
+      currentOrder : {},
+
       orders : [],
       tableHeaders : [
         { text: "ID", value: "id"},
@@ -142,17 +159,29 @@ export default {
 
   methods : {
 
-    goToOrderDetails(e, { item }) {
-      this.$router.push({ name: "delivered-order-detail", params: { id: item.id, } });
+    closeApproveDialog(){
+      this.currentOrder = {}
+      this.approveDialog = false
+    },
+
+    openApproveDialog(order){
+      this.currentOrder = order
+      this.approveDialog = true
     },
 
     async completeOrder(){
       try{
-        await this.$http.get(`marketplace/manager_delivered_orders`)
+        await this.$http.get(`marketplace/manager_delivered_orders/${this.currentOrder.id}/complete_order/`)
+        this.closeApproveDialog()
+        await this.fetchDeliveredOrders()
       }
       catch (e) {
         console.log(e)
       }
+    },
+
+    goToOrderDetails(e, { item }) {
+      this.$router.push({ name: "delivered-order-detail", params: { id: item.id, } });
     },
 
    async fetchDeliveredOrders(){

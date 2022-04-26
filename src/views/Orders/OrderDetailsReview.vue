@@ -59,6 +59,11 @@
               <OrderSubPositionsReview />
             </v-tab-item>
 
+            <v-tab-item
+            >
+              <Comments />
+            </v-tab-item>
+
           </v-tabs-items>
 
 
@@ -69,11 +74,12 @@
 </template>
 
 <script>
+import Comments from "@/components/Comments";
 import OrderPositionsReview from "@/views/Orders/OrderPositionsReview";
 import OrderSubPositionsReview from "@/views/Orders/OrderSubPositionsReview";
 export default {
   name: "OrderDetails",
-  components: {OrderSubPositionsReview, OrderPositionsReview},
+  components: {OrderSubPositionsReview, OrderPositionsReview, Comments},
 
   data(){
     return {
@@ -81,7 +87,7 @@ export default {
 
       tab: null,
       items: [
-        'Позиций заказа', 'Сборки',
+        'Позиций заказа', 'Сборки', "Комментарии",
       ],
 
       order : {},

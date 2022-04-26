@@ -57,19 +57,15 @@
 
         <template  v-slot:[`item.delivery_type`]='{ item }'>
           <div v-if="item.delivery_type === 'pickup_min_points'">
-            <p>Наименьшее количество точек</p>
+            <p>Наименьшее количество точек(самовывоз)</p>
           </div>
 
           <div v-if="item.delivery_type === 'pickup_nearest_points'">
-            <p>Ближайший точки (самовыаоз)</p>
+            <p>Ближайший точки (самовывоз)</p>
           </div>
 
           <div v-if="item.delivery_type === 'pickup_min_cost'">
-            <p>Лучшая цена (самовыаоз)</p>
-          </div>
-
-          <div v-if="item.delivery_type === 'pickup_min_points'">
-            <p>Наименьшее количество точек (самовыаоз)</p>
+            <p>Лучшая цена (самовывоз)</p>
           </div>
 
           <div v-if="item.delivery_type === 'delivery_today'">

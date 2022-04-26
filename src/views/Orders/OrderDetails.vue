@@ -115,6 +115,11 @@
               <OrderPosition />
             </v-tab-item>
 
+            <v-tab-item
+            >
+              <Comments />
+            </v-tab-item>
+
           </v-tabs-items>
 
 
@@ -125,11 +130,12 @@
 </template>
 
 <script>
+import Comments from "@/components/Comments";
 import OrderSubPosition from "@/views/Orders/OrderSubPositions";
 import OrderPosition from "@/views/Orders/OrderPosition";
 export default {
   name: "OrderDetails",
-  components: {OrderSubPosition, OrderPosition},
+  components: {OrderSubPosition, OrderPosition, Comments},
 
   data(){
     return {
@@ -140,9 +146,9 @@ export default {
       approveOrderDialog : false,
       deleteDialog : false,
 
-      tab: null,
+      tab: 0,
       items: [
-        'Сборки', 'Позиций заказа',
+        'Сборки', 'Позиций заказа', "Комментарии",
       ],
 
       order : {},

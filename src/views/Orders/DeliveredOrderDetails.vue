@@ -19,7 +19,6 @@
               <h6>Адрес : {{order._address}}</h6>
               <h6>Телефон : {{order.phone}}</h6>
               <h6>Статус : {{order.order_status}}</h6>
-              <h6>Адрес : {{order._address}}</h6>
               <h6>Оплата сразу :
                 <template v-if="order.paid_right_away === true" >
                   Да
@@ -59,6 +58,11 @@
               <OrderSubPositionsReview   />
             </v-tab-item>
 
+            <v-tab-item
+            >
+              <Comments   />
+            </v-tab-item>
+
           </v-tabs-items>
 
 
@@ -71,9 +75,10 @@
 <script>
 import OrderPositionsReview from "@/views/Orders/OrderPositionsReview";
 import OrderSubPositionsReview from "@/views/Orders/OrderSubPositionsReview";
+import Comments from "@/components/Comments";
 export default {
   name: "OrderDetails",
-  components: {OrderPositionsReview, OrderSubPositionsReview},
+  components: {OrderPositionsReview, OrderSubPositionsReview, Comments},
 
   data(){
     return {
@@ -85,7 +90,7 @@ export default {
 
       tab: null,
       items: [
-        'Сборки', 'Позиций заказа',
+        'Сборки', 'Позиций заказа', "Комментарий",
       ],
 
       order : {},

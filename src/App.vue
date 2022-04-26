@@ -27,6 +27,10 @@ export default {
 
 <style>
 
+th {
+  font-size: 12px;
+}
+
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;
