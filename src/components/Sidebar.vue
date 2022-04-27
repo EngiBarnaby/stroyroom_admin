@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="!isFetching">
       <v-navigation-drawer
           clipped
           app
@@ -12,12 +12,21 @@
         <v-list nav dense >
             <v-list-item v-for="(item, i) in accepted_links" :key="i" :to="item.link">
               <v-list-item-icon >
-                <v-icon class="white--text">{{item.icon}}</v-icon>
+                <div v-if="item.count > 0">
+                  <v-badge color="green" :content="item.count">
+                    <v-icon class="white--text">{{item.icon}}</v-icon>
+                  </v-badge>
+                </div>
+                <div v-else>
+                  <v-icon class="white--text">{{item.icon}}</v-icon>
+                </div>
               </v-list-item-icon>
               <v-list-item-content class="ml-4 white--text">
-                <v-list-item-title v-text="item.name"></v-list-item-title>
+                <v-list-item-title>{{item.name}}</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
+
+
         </v-list>
 
       </v-navigation-drawer>
@@ -34,33 +43,72 @@ export default {
   data(){
     return {
 
+      isFetching : true,
+
+
       checkup : {},
 
       mainList : [
-        {name : "Заказы", icon : "mdi-cart-outline", link : "/orders", "key" : "orders"},
-        {name : "Заказы", icon : "mdi-cart-outline", link : "/logist-orders-table", "key" : "logist_orders"},
+        {name : "Заказы", icon : "mdi-cart-outline", link : "/orders", "key" : "orders", count : 0},
+        {name : "Заказы", icon : "mdi-cart-outline", link : "/logist-orders-table", "key" : "logist_orders", count : 0},
         {name : "Машины", icon : "mdi-truck-cargo-container", link : "/cars", "key" : "cars"},
         {name : "Номенклатура", icon : "mdi-clipboard-list-outline", link : "/nomenclatures", "key" : "nomenclature"},
         {name : "Сборки", icon : "mdi-clock", link : "/actions"},
         {name : "Магазины", icon : "mdi-store", link : "/shops", "key" : "shops"},
-        {name : "Мои заказы", icon : "mdi-book-account", link : "/appointment-orders", "key" : "my_orders"},
-        {name : "Мои заказы", icon : "mdi-book-account", link : "/appointment-logist-orders", "key" : "my_orders_logist"},
-        {name : "Доставляются", icon : "mdi-truck-delivery-outline", link : "/delivering-table", "key" : "is_delivering"},
-        {name : "Требуют завершения", icon : "mdi-checkbox-multiple-marked-circle-outline", link : "/delivered-orders", "key" : "delivered_orders"},
+        {name : "Мои заказы", icon : "mdi-book-account", link : "/appointment-orders", "key" : "my_orders", count : 0},
+        {name : "Мои заказы", icon : "mdi-book-account", link : "/appointment-logist-orders", "key" : "my_orders_logist", count: 0},
+        {name : "Доставляются", icon : "mdi-truck-delivery-outline", link : "/delivering-table", "key" : "is_delivering", count : 0},
+        {name : "Требуют завершения", icon : "mdi-checkbox-multiple-marked-circle-outline", link : "/delivered-orders", "key" : "delivered_orders", count : 0},
       ],
     }
   },
 
   methods : {
+
+    getNotifications(){
+      setInterval(()=> {
+        this.getManagerOrderCount()
+        this.getManagerAppointmentOrderCount()
+        this.getManagerDeliveredOrderCount()
+        this.getLogistOrderCount()
+        this.getLogistAppointmentOrderCount()
+        this.getDeliveringOrderCount()
+      }, 5000)
+    },
+
+    async getDeliveringOrderCount(){
+      let { data } = await api.get('marketplace/logist_delivering_order')
+      this.mainList[8].count = data.count
+    },
+
+    async getLogistAppointmentOrderCount(){
+      let { data } = await api.get('marketplace/logist_appointment_orders')
+      this.mainList[7].count = data.count
+    },
+
+
+    async getLogistOrderCount(){
+      let { data } = await api.get('marketplace/logist_manager_order')
+      this.mainList[1].count = data.count
+    },
+
+    async getManagerDeliveredOrderCount(){
+      let { data } = await api.get('marketplace/manager_delivered_orders')
+      this.mainList[9].count = data.count
+    },
+
+    async getManagerAppointmentOrderCount(){
+      let { data } = await api.get('marketplace/manager_appointment_orders')
+      this.mainList[6].count = data.count
+    },
+
+
+    async getManagerOrderCount(){
+      let { data } = await api.get('marketplace/manager_order/')
+      this.mainList[0].count = data.count
+    },
+
     getCheckUp(){
-   // try{
-   //   let {data} = await this.$http.get("marketplace/get_check_up/")
-   //   console.log(data)
-   //   this.checkup = data
-   // }
-   // catch (e) {
-   //   console.log(e)
-   // }
      api('marketplace/get_check_up/')
      .then(({data})=>{
        this.checkup = data
@@ -80,12 +128,23 @@ export default {
   },
 
    mounted() {
-     // this.getCheckUp()
+
+    this.getManagerOrderCount()
+    this.getManagerAppointmentOrderCount()
+    this.getManagerDeliveredOrderCount()
+    this.getLogistOrderCount()
+    this.getLogistAppointmentOrderCount()
+    this.getDeliveringOrderCount()
+
+     this.getNotifications()
+
      api('marketplace/get_check_up/')
          .then(({data})=>{
            this.checkup = data
          })
          .catch(e => console.error(e))
+
+     this.isFetching = false
   }
 
 }
