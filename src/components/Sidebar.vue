@@ -67,12 +67,18 @@ export default {
 
     getNotifications(){
       setInterval(()=> {
-        this.getManagerOrderCount()
-        this.getManagerAppointmentOrderCount()
-        this.getManagerDeliveredOrderCount()
-        this.getLogistOrderCount()
-        this.getLogistAppointmentOrderCount()
-        this.getDeliveringOrderCount()
+        if(this.checkup.name === "OrderManager"){
+          this.getManagerOrderCount()
+          this.getManagerAppointmentOrderCount()
+          this.getManagerDeliveredOrderCount()
+        }
+
+        if(this.checkup.name === "LogistManager"){
+          this.getLogistOrderCount()
+          this.getLogistAppointmentOrderCount()
+          this.getDeliveringOrderCount()
+        }
+
       }, 5000)
     },
 
@@ -127,22 +133,31 @@ export default {
     }
   },
 
-   mounted() {
+   async mounted() {
 
-    this.getManagerOrderCount()
-    this.getManagerAppointmentOrderCount()
-    this.getManagerDeliveredOrderCount()
-    this.getLogistOrderCount()
-    this.getLogistAppointmentOrderCount()
-    this.getDeliveringOrderCount()
+    let {data} = await api.get('marketplace/get_check_up/')
+
+     this.checkup = data
+
+     // api('marketplace/get_check_up/')
+     //     .then(({data})=>{
+     //       this.checkup = data
+     //     })
+     //     .catch(e => console.error(e))
+
+     if(this.checkup.name === "OrderManager"){
+       this.getManagerOrderCount()
+       this.getManagerAppointmentOrderCount()
+       this.getManagerDeliveredOrderCount()
+     }
+
+     if(this.checkup.name === "LogistManager"){
+       this.getLogistOrderCount()
+       this.getLogistAppointmentOrderCount()
+       this.getDeliveringOrderCount()
+     }
 
      this.getNotifications()
-
-     api('marketplace/get_check_up/')
-         .then(({data})=>{
-           this.checkup = data
-         })
-         .catch(e => console.error(e))
 
      this.isFetching = false
   }

@@ -35,7 +35,7 @@
 
     <v-dialog v-model="shopProductsDialog" width="1500">
       <v-card class="pa-4">
-        <ShopPositions :subOrder.sync="currentSubOrder" @refresh="refresh" />
+        <ShopPositions :subOrder.sync="currentSubOrder" :orderId="this.$route.params.id" @refresh="refresh" />
       </v-card>
     </v-dialog>
 
@@ -326,6 +326,8 @@ export default {
     async deletePosition(){
       let subOrderPosition = this.currentItem.id
       await this.$http.delete(`marketplace/manager_sub_order_positions/${subOrderPosition}/`)
+      await this.$http.post(`marketplace/manager_order_positions/delete_position/`, {order : this.$route.params.id, product : this.currentItem.product})
+      this.$emit("refreshOrderPosition")
       this.subOrders = this.subOrders.filter(el => {
         if(el.id === this.currentSubOrder.id){
           el.positions = el.positions.filter(el2 => el2.id !== this.currentItem.id)
@@ -362,6 +364,10 @@ export default {
 
     async setItemCount(item){
       await this.$http.post(`marketplace/manager_sub_order_positions/${item.id}/change_count/`, {"count" : item.count})
+      await this.$http.post(`marketplace/manager_order_positions/change_count/`, {"count" : item.count,
+                                                                                          order : this.$route.params.id,
+                                                                                          product : item.product})
+      this.$emit("refreshOrderPosition")
     },
 
     async fetchShops(){

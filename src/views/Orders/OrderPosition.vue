@@ -29,9 +29,9 @@
     </v-dialog>
 
     <div class="main-wrapper">
-      <v-btn outlined color="success" @click="addPositionDialog = true" class="mb-6 mt-4">
-        Добавить позицию
-      </v-btn>
+<!--      <v-btn outlined color="success" @click="addPositionDialog = true" class="mb-6 mt-4">-->
+<!--        Добавить позицию-->
+<!--      </v-btn>-->
       <div v-for="(position, index) in positions" :key="index">
         <div class="position">
           <div class="content-container">
@@ -54,33 +54,34 @@
               <h6>Единица измерения : {{position.nomenclature._measurement.name}}</h6>
               <h6>Цена за единицу : {{position.cost}} &#8381;</h6>
               <h6>Общая цена {{(position.count * position.cost ).toFixed(2)}} &#8381;</h6>
-              <v-text-field
+              <h6>Магазин : {{position._shop}} {{position.shop_address.address}}</h6>
+<!--              <v-text-field-->
 
-                  :value="position.count"
-                  prepend-icon="mdi-minus-circle-outline"
-                  append-outer-icon="mdi-plus-circle-outline"
-                  type="number"
-                  @input="setValue($event, position)"
-                  @click:prepend="subtract(position)"
-                  @click:append-outer="add(position)"
-              ></v-text-field>
-              <v-tooltip bottom>
-                <template v-slot:activator="{ on, attrs }">
-                  <v-btn
-                      v-bind="attrs"
-                      v-on="on"
-                      icon
-                      @click="openDeleteDialog(position)"
-                  >
-                    <v-icon
-                        color="error"
-                    >
-                      mdi-trash-can-outline
-                    </v-icon>
-                  </v-btn>
-                </template>
-                <span>Удалить позицию</span>
-              </v-tooltip>
+<!--                  :value="position.count"-->
+<!--                  prepend-icon="mdi-minus-circle-outline"-->
+<!--                  append-outer-icon="mdi-plus-circle-outline"-->
+<!--                  type="number"-->
+<!--                  @input="setValue($event, position)"-->
+<!--                  @click:prepend="subtract(position)"-->
+<!--                  @click:append-outer="add(position)"-->
+<!--              ></v-text-field>-->
+<!--              <v-tooltip bottom>-->
+<!--                <template v-slot:activator="{ on, attrs }">-->
+<!--                  <v-btn-->
+<!--                      v-bind="attrs"-->
+<!--                      v-on="on"-->
+<!--                      icon-->
+<!--                      @click="openDeleteDialog(position)"-->
+<!--                  >-->
+<!--                    <v-icon-->
+<!--                        color="error"-->
+<!--                    >-->
+<!--                      mdi-trash-can-outline-->
+<!--                    </v-icon>-->
+<!--                  </v-btn>-->
+<!--                </template>-->
+<!--                <span>Удалить позицию</span>-->
+<!--              </v-tooltip>-->
               <!--              <v-btn icon><v-icon color="error">mdi-trash-can-outline</v-icon></v-btn>-->
             </div>
           </div>
@@ -110,6 +111,7 @@ export default {
   },
 
   methods : {
+
 
     async onAddProduct(product){
       let formData = {

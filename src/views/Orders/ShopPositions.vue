@@ -32,6 +32,7 @@
               <div class="product-info">
                 <h6>Количество в магазине : {{product.count}}</h6>
                 <h6>Единица измерения : {{product._nomenclature._measurement.name}}</h6>
+                <h6>Цена : {{product.cost}}&#8381;</h6>
               </div>
             </div>
           </v-card-text>
@@ -87,7 +88,7 @@
 
 export default {
   name: "ShopPositions",
-  props : ["subOrder"],
+  props : ["subOrder", "orderId"],
 
   data(){
     return {
@@ -113,6 +114,16 @@ export default {
             "sub_order" : this.subOrder.id,
             "count" : product.currentCount
           })
+
+          await this.$http.post(`marketplace/manager_order_positions/add_position_in_order/`, {
+            "product" : product.id,
+            "nomenclature" : product.nomenclature,
+            "order" : this.orderId,
+            "count" : product.currentCount,
+            "shop" : this.subOrder.shop,
+            "cost" : product.cost,
+          })
+
           this.$emit("refresh")
           this.successAdd = true
         }
@@ -167,6 +178,7 @@ export default {
           return el
         })
       this.shopProducts = results
+      console.log(this.shopProducts)
     }
   },
 
@@ -183,7 +195,6 @@ export default {
   },
 
   mounted() {
-    console.log(this.subOrder)
     this.fetchProducts(this.subOrder)
   }
 

@@ -71,10 +71,7 @@
             <v-tab-item
             >
               <v-card>
-                <v-card-title>
-                  Назначение машины
-                </v-card-title>
-                <AppointmentCars :carSelected="carSelected" @selectCar="appointCar"/>
+                <AppointmentCars :carSelected="carSelected" :orderId="$route.params.id" @selectCar="appointCar"/>
               </v-card>
             </v-tab-item>
 

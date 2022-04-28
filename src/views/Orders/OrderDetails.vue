@@ -107,12 +107,12 @@
           <v-tabs-items v-model="tab">
             <v-tab-item
             >
-              <OrderSubPosition @all_approved="changeStatus"/>
+              <OrderSubPosition @all_approved="changeStatus" @refreshOrderPosition="refreshOrderPosition"/>
             </v-tab-item>
 
             <v-tab-item
             >
-              <OrderPosition />
+              <OrderPosition ref="orderPosition" />
             </v-tab-item>
 
             <v-tab-item
@@ -156,6 +156,12 @@ export default {
   },
 
   methods : {
+
+    refreshOrderPosition(){
+      if(this.$refs.orderPosition){
+        this.$refs.orderPosition.fetchPositions()
+      }
+    },
 
     async cancelOrder(){
       await this.$http.get(`marketplace/manager_appointment_orders/${this.order.id}/set_canceled/`)
