@@ -303,6 +303,7 @@ export default {
 
     refresh(){
       this.subOrders = []
+      this.$emit("refreshOrderPosition")
       this.fetchSubOrders()
     },
 

@@ -159,6 +159,7 @@ export default {
 
     refreshOrderPosition(){
       if(this.$refs.orderPosition){
+        console.log("it's work")
         this.$refs.orderPosition.fetchPositions()
       }
     },

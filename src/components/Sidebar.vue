@@ -83,34 +83,34 @@ export default {
     },
 
     async getDeliveringOrderCount(){
-      let { data } = await api.get('marketplace/logist_delivering_order')
+      let { data } = await api.get('marketplace/logist_delivering_order/get_count/')
       this.mainList[8].count = data.count
     },
 
     async getLogistAppointmentOrderCount(){
-      let { data } = await api.get('marketplace/logist_appointment_orders')
+      let { data } = await api.get('marketplace/logist_appointment_orders/get_count/')
       this.mainList[7].count = data.count
     },
 
 
     async getLogistOrderCount(){
-      let { data } = await api.get('marketplace/logist_manager_order')
+      let { data } = await api.get('marketplace/logist_manager_order/get_count/')
       this.mainList[1].count = data.count
     },
 
     async getManagerDeliveredOrderCount(){
-      let { data } = await api.get('marketplace/manager_delivered_orders')
+      let { data } = await api.get('marketplace/manager_delivered_orders/get_count/')
       this.mainList[9].count = data.count
     },
 
     async getManagerAppointmentOrderCount(){
-      let { data } = await api.get('marketplace/manager_appointment_orders')
+      let { data } = await api.get('marketplace/manager_appointment_orders/get_count/')
       this.mainList[6].count = data.count
     },
 
 
     async getManagerOrderCount(){
-      let { data } = await api.get('marketplace/manager_order/')
+      let { data } = await api.get('marketplace/manager_order/get_count/')
       this.mainList[0].count = data.count
     },
 

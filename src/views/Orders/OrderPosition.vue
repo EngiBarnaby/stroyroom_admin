@@ -153,6 +153,7 @@ export default {
     },
 
     async fetchPositions(){
+      console.log("It's from child")
       let {data} = await this.$http.get(`marketplace/manager_order_positions/?order=${this.$route.params.id}`)
       this.positions = data
     },
