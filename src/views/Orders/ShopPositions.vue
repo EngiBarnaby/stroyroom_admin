@@ -1,7 +1,7 @@
 <template>
   <div>
     <h2 class="title">
-      Продукты магазина : {{subOrder._shop.address}}
+      Продукты магазина
     </h2>
     <div class="search-wrapper">
       <div class="search-field">

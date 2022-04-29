@@ -246,6 +246,7 @@ export default {
       try{
         await this.$http.post('marketplace/manager_sub_order/', data)
         this.subOrders = []
+        this.closeCreateSubOrderDialog()
         await this.fetchSubOrders()
       }
       catch (e) {
@@ -269,8 +270,9 @@ export default {
     },
 
     async deleteSubOrder(){
-      await this.$http.delete(`marketplace/manager_sub_order/${this.currentSubOrder.id}/`)
+      await this.$http.delete(`marketplace/manager_sub_order/${this.currentSubOrder.id}/delete_sub_order/`)
       this.subOrders = this.subOrders.filter(el => el.id !== this.currentSubOrder.id)
+      this.$emit("refreshOrderPosition")
       this.closeDeleteSubOrderDialog()
     },
 

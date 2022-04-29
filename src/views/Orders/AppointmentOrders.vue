@@ -68,9 +68,9 @@
             <p>Лучшая цена (самовывоз)</p>
           </div>
 
-          <div v-if="item.delivery_type === 'pickup_min_points'">
-            <p>Наименьшее количество точек (самовывоз)</p>
-          </div>
+<!--          <div v-if="item.delivery_type === 'pickup_min_points'">-->
+<!--            <p>Наименьшее количество точек (самовывоз)</p>-->
+<!--          </div>-->
 
           <div v-if="item.delivery_type === 'delivery_today'">
             <p>Лучшая цена (доставка)</p>
