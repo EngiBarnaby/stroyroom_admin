@@ -1,5 +1,87 @@
 <template>
   <div>
+
+    <v-dialog width="500" v-model="contactDeleteApprove" @click:outside="closeContactDeleteApprove">
+      <v-card class="pa-4">
+        <v-card-title>
+          Вы уверены, что хотите удалить контакт?
+        </v-card-title>
+        <v-card-actions>
+          <v-btn outlined color="error" @click="closeContactDeleteApprove">
+            Нет
+          </v-btn>
+          <v-btn outlined color="success" @click="deleteContact">
+            Да
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <v-dialog width="500" v-model="contactsDialog" @click:outside="closeContactsDialog">
+      <v-card class="pa-4">
+        <v-card-title>
+          Контакты
+        </v-card-title>
+        <v-card v-for="contact in carContacts" :key="contact.id" class="mb-4">
+          <v-card-title>
+            <v-row align="center">
+              <v-col cols="6">
+                {{contact.contact}}
+              </v-col>
+              <v-col cols="6">
+                <div style="display: flex; justify-content: end;">
+                  <div v-if="contact.actual">
+                    <h6 style="color:green;">Актуален</h6>
+                  </div>
+                  <div v-else>
+                    <h6 style="color:darkred;">Не актуален</h6>
+                  </div>
+                </div>
+                <div style="display: flex; justify-content: end;">
+                  <v-switch  hide-details v-model="contact.actual" @change="changeContactStatus(contact)" style="margin-top: 0px !important;"></v-switch>
+
+                  <v-tooltip bottom>
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-btn
+                          v-bind="attrs"
+                          v-on="on"
+                          icon
+                          @click="openContactDeleteApprove(contact)"
+                      >
+                        <v-icon>
+                          mdi-delete-outline
+                        </v-icon>
+                      </v-btn>
+                    </template>
+                    <span>Удалить контакт</span>
+                  </v-tooltip>
+
+                </div>
+              </v-col>
+            </v-row>
+          </v-card-title>
+          <v-card-subtitle>
+            {{contact.description}}
+          </v-card-subtitle>
+        </v-card>
+
+        <v-card class="mt-4">
+          <v-card-title>
+            Добавить контакт
+          </v-card-title>
+          <v-card-text>
+            <v-form v-model="contactFromIsValid" @submit.prevent="addContact">
+              <v-text-field v-model="contact" outlined label="Номер" :rules="[(v) => !!v || 'Обязательное поле']"/>
+              <v-textarea v-model="description" outlined label="Описание" />
+              <v-btn outlined color="success" type="submit">
+                Добавить
+              </v-btn>
+            </v-form>
+          </v-card-text>
+        </v-card>
+      </v-card>
+    </v-dialog>
+
       <v-container>
         <v-row justify="center" class="mt-4">
           <h2>Список машин</h2>
@@ -35,6 +117,23 @@
             <div v-if="car.edit === false" >
               <v-card class="pa-4 car-info" height="500" style="overflow: auto;">
                 <div class="edit-btn">
+
+                  <v-tooltip bottom>
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-btn
+                          v-bind="attrs"
+                          v-on="on"
+                          icon
+                          @click="openContactsDialog(car)"
+                      >
+                        <v-icon large>
+                          mdi-phone-outline
+                        </v-icon>
+                      </v-btn>
+                    </template>
+                    <span>Контакты</span>
+                  </v-tooltip>
+
                   <v-tooltip bottom color="white">
                     <template v-slot:activator="{ on, attrs }">
                       <v-btn icon
@@ -172,8 +271,19 @@ export default {
 
   data(){
     return {
-      cars : [],
 
+      contact : "",
+      description : "",
+
+      contactDeleteApprove : false,
+      currentContact : {},
+
+      contactFromIsValid : false,
+      contactsDialog : false,
+      currentCar : {},
+
+      cars : [],
+      carContacts : [],
 
       count : 0,
       page : 1,
@@ -184,6 +294,67 @@ export default {
   },
 
   methods : {
+
+    closeContactDeleteApprove(){
+      this.currentContact = {}
+      this.contactDeleteApprove = false
+    },
+
+    openContactDeleteApprove(contact){
+      this.currentContact = contact
+      this.contactDeleteApprove = true
+    },
+
+    closeContactsDialog(){
+      this.contact = ""
+      this.description = ""
+      this.currentCar = {}
+      this.contactsDialog = false
+    },
+
+    openContactsDialog(car){
+      this.currentCar = car
+      this.contactsDialog = true
+    },
+
+   async deleteContact(){
+     await this.$http.delete(`marketplace/car_contacts/${this.currentContact.id}/`)
+     this.carContacts = this.carContacts.filter(el => el.id !== this.currentContact.id)
+     this.closeContactDeleteApprove()
+   },
+
+   async changeContactStatus(contact){
+      if(contact.actual === true){
+        contact.actual = false
+      }
+
+      if(contact.actual === false){
+        contact.actual = true
+      }
+
+      this.$http.put(`marketplace/car_contacts/${contact.id}/`, contact)
+   },
+
+   async addContact(){
+      let contactData = {
+        car : this.currentCar.id,
+        contact : this.contact,
+        description : this.description,
+        actual : true,
+      }
+      try{
+        let { data } = await this.$http.post(`marketplace/car_contacts/`, contactData)
+        this.carContacts.push(data)
+      }
+      catch (e) {
+        console.log(e)
+      }
+   },
+
+   async fetchCarContacts(){
+      let {data} = await this.$http.get(`marketplace/car_contacts/?car=${this.currentCar.id}`)
+      this.carContacts = data
+   },
 
    async save(car){
      let newData = Object.assign({}, car)
@@ -210,6 +381,14 @@ export default {
       }
       catch (e){
         console.log(e)
+      }
+    }
+  },
+
+  watch : {
+    currentCar(){
+      if(this.currentCar.id){
+        this.fetchCarContacts()
       }
     }
   },

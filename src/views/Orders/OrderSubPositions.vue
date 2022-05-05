@@ -270,7 +270,7 @@ export default {
     },
 
     async deleteSubOrder(){
-      await this.$http.delete(`marketplace/manager_sub_order/${this.currentSubOrder.id}/delete_sub_order/`)
+      await this.$http.delete(`marketplace/manager_sub_order/${this.currentSubOrder.id}/`)
       this.subOrders = this.subOrders.filter(el => el.id !== this.currentSubOrder.id)
       this.$emit("refreshOrderPosition")
       this.closeDeleteSubOrderDialog()
@@ -329,7 +329,7 @@ export default {
     async deletePosition(){
       let subOrderPosition = this.currentItem.id
       await this.$http.delete(`marketplace/manager_sub_order_positions/${subOrderPosition}/`)
-      await this.$http.post(`marketplace/manager_order_positions/delete_position/`, {order : this.$route.params.id, product : this.currentItem.product})
+      // await this.$http.post(`marketplace/manager_order_positions/delete_position/`, {order : this.$route.params.id, product : this.currentItem.product})
       this.$emit("refreshOrderPosition")
       this.subOrders = this.subOrders.filter(el => {
         if(el.id === this.currentSubOrder.id){

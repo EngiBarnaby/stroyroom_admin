@@ -1,87 +1,8 @@
 <template>
   <div>
 
-    <v-dialog v-model="getCarsDialog">
-      <v-card width="1500">
-        <v-card-title>
-          <v-row justify="end">
-            <v-btn icon @click="getCarsDialog = false">
-              <v-icon x-large>
-                mdi-close-circle-outline
-              </v-icon>
-            </v-btn>
-          </v-row>
-        </v-card-title>
-        <v-card-title>
-          <v-row justify="center">
-            Подобрать машину
-          </v-row>
-        </v-card-title>
-        <v-card-text class="mt-5">
-          <v-row justify="center">
-            <v-btn outlined color="info">
-              Подобрать дешёвый вариант
-            </v-btn>
-            <v-btn outlined color="info" class="ml-4">
-              Подобрать дорогой вариант
-            </v-btn>
-          </v-row>
-
-          <v-row >
-            <v-col xs="10" sm="6" md="4" lg="3"  v-for="(car) in cars" :key="car.id">
-              <div>
-                <v-card class="pa-4 car-info" height="450" style="overflow: auto;">
-                  <div class="edit-btn">
-
-                    <v-tooltip bottom color="white">
-                      <template v-slot:activator="{ on, attrs }">
-                        <v-btn icon
-                               v-bind="attrs"
-                               v-on="on"
-                        >
-                          <v-icon>
-                            mdi-help-circle-outline
-                          </v-icon>
-                        </v-btn>
-                      </template>
-
-                      <v-card width="300" elevation="0" color="white">
-                        <h6 class="pt-5">{{car._type.name}}</h6>
-                        <h6>Высота: {{car._type.height}}</h6>
-                        <h6>Ширина: {{car._type.width}}</h6>
-                        <h6>Длина: {{car._type.long}}</h6>
-                        <h6>Макс. вес: {{car._type.max_weight}} кг.</h6>
-                      </v-card>
-                    </v-tooltip>
-
-                  </div>
-
-                  <h6>{{car.name}}</h6>
-                  <div>
-                    <v-img :src="car._type.img" width="350"  class="mb-4" />
-                  </div>
-                  <h6>Модель : {{car.model}}</h6>
-                  <h6 class="text--black">Номер : {{car.number}}</h6>
-                  <h6>Цвет : {{car.color}}</h6>
-                  <h6>Цена за час макс. : {{car.cost_per_hour_max}}</h6>
-                  <h6>Цена за час мин. : {{car.cost_per_hour_min}}</h6>
-                  <v-btn v-if="!carSelected" outlined color="success" @click="$emit('selectCar', car)">Назначить машину</v-btn>
-                </v-card>
-              </div>
-            </v-col>
-          </v-row>
-
-        </v-card-text>
-      </v-card>
-    </v-dialog>
-
     <div class="scroll">
       <v-container class="mt-4">
-        <v-row justify="start">
-          <v-btn outlined color="info" @click="getCarsDialog = true">
-            Подобрать машину
-          </v-btn>
-        </v-row>
         <v-row justify="center" class="mt-4">
           <h3>Список машин</h3>
         </v-row>
@@ -109,6 +30,8 @@
             <div>
               <v-card class="pa-4 car-info" height="450" style="overflow: auto;">
                 <div class="edit-btn">
+
+
 
                   <v-tooltip bottom color="white">
                     <template v-slot:activator="{ on, attrs }">
@@ -142,7 +65,6 @@
                 <h6>Цвет : {{car.color}}</h6>
                 <h6>Цена за час макс. : {{car.cost_per_hour_max}}</h6>
                 <h6>Цена за час мин. : {{car.cost_per_hour_min}}</h6>
-                <v-btn v-if="!carSelected" outlined color="success" @click="$emit('selectCar', car)">Назначить машину</v-btn>
               </v-card>
             </div>
           </v-col>
@@ -164,9 +86,8 @@
 
 <script>
 export default {
-  props : ["carSelected", "orderId"],
 
-  name: "AppointmentCars",
+  name: "CarsList",
 
   data(){
     return {

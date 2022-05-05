@@ -1,6 +1,12 @@
 <template>
   <div v-if="!isFetching">
 
+    <v-dialog width="750" v-model="carInfoDialog">
+      <v-card>
+        <CarInfo :car="car" />
+      </v-card>
+    </v-dialog>
+
     <v-dialog width="500" v-model="cancelOrderDialog">
       <v-card>
         <v-card-title>
@@ -10,6 +16,19 @@
           <v-btn outlined color="error" @click="cancelOrderDialog = false">Нет</v-btn>
           <v-btn outlined color="success" @click="cancelOrder">Да</v-btn>
         </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <v-dialog width="1500" v-model="appointCarDialog">
+      <v-card>
+        <v-row justify="end">
+          <v-btn icon @click="appointCarDialog = false" class="mt-5 mr-7">
+            <v-icon x-large>
+              mdi-close-circle-outline
+            </v-icon>
+          </v-btn>
+        </v-row>
+        <AppointmentOrderCars @carSelected="carSelected" :orderId="$route.params.id" />
       </v-card>
     </v-dialog>
 
@@ -40,6 +59,28 @@
             </h6>
             <h6>Сумма : {{order.cost}} &#8381;</h6>
 
+            <div v-if="order.car">
+              <h6>Машина : {{order._car.name}}
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn icon
+                           v-bind="attrs"
+                           v-on="on"
+                           @click="openCarInfoDialog(order._car)"
+                    >
+                      <v-icon>
+                        mdi-help-circle-outline
+                      </v-icon>
+                    </v-btn>
+                  </template>
+                  <span>Посмотреть информацию</span>
+                </v-tooltip>
+              </h6>
+            </div>
+            <div v-else>
+              <h6>Машина на заказ не назначена</h6>
+            </div>
+
             <v-card-actions>
               <v-btn
                   outlined
@@ -48,6 +89,11 @@
               >
                 Отменить заявку
               </v-btn>
+
+              <v-btn outlined color="info" @click="appointCarDialog = true">
+                Назначить машину
+              </v-btn>
+
             </v-card-actions>
 
           </v-card>
@@ -68,10 +114,18 @@
           </v-tabs>
 
           <v-tabs-items v-model="tab">
+
             <v-tab-item
             >
               <v-card>
-                <AppointmentCars :carSelected="carSelected" :orderId="$route.params.id" @selectCar="appointCar"/>
+                <LogistSubOrder ref="subOrders" @carSelected="fetchOrderDetail"/>
+              </v-card>
+            </v-tab-item>
+
+            <v-tab-item
+            >
+              <v-card>
+                <CarsList />
               </v-card>
             </v-tab-item>
 
@@ -102,57 +156,66 @@
 
 <script>
 import Comments from "@/components/Comments";
-import AppointmentCars from "@/views/Cars/AppointmentCars";
+import LogistSubOrder from "@/views/LogistOrders/LogistSubOrder";
+import CarsList from "@/views/Cars/CarsList";
+import AppointmentOrderCars from "@/views/Cars/AppointmentOrderCars";
+import CarInfo from "@/views/Cars/CarInfo";
 export default {
   name: "AppointmentOrderDetail",
 
-  components : { AppointmentCars, Comments },
+  components : { CarsList, Comments, LogistSubOrder, AppointmentOrderCars, CarInfo},
 
   data(){
     return {
 
       tab: 0,
       items: [
-        "Машины", "Комментарии",
+        "Сборки", "Машины", "Комментарии",
       ],
 
+      car : {},
+
+      carInfoDialog : false,
+      appointCarDialog : false,
       cancelOrderDialog : false,
 
       isFetching : true,
       successSnackbar : false,
 
       order : {},
-      carSelected : false,
 
     }
   },
 
+
   methods : {
 
+    // closeCarInfoDialog(){
+    //   this.car = {}
+    //   this.carInfoDialog = false
+    // },
+
+    openCarInfoDialog(car){
+      this.car = car
+      this.carInfoDialog = true
+    },
+
+    carSelected(){
+      this.fetchOrderDetail()
+      this.$refs.subOrders.fetchSubOrders()
+    },
 
     async cancelOrder(){
       await this.$http.get(`marketplace/logist_appointment_orders/${this.order.id}/set_canceled/`)
       this.$router.push("/appointment-logist-orders")
     },
 
-    async appointCar(car){
-      try{
-        await this.$http.get(`marketplace/logist_appointment_orders/${this.$route.params.id}/appoint_car/?car=${car.id}`)
-        this.successSnackbar = true
-        this.carSelected = true
-      }
-      catch (e){
-        console.log(e)
-      }
-    },
 
     async fetchOrderDetail(){
       try{
         let { data } = await this.$http.get(`marketplace/logist_appointment_orders/${this.$route.params.id}/`)
         this.order = data
-        if(this.order.delivery_agreed){
-          this.carSelected = true
-        }
+        this.car = this.order._car
         // this.$router.push("/appointment-logist-orders")
       }
       catch (e) {

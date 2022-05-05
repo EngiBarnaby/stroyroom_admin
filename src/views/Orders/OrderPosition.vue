@@ -65,24 +65,24 @@
 <!--                  @click:prepend="subtract(position)"-->
 <!--                  @click:append-outer="add(position)"-->
 <!--              ></v-text-field>-->
-<!--              <v-tooltip bottom>-->
-<!--                <template v-slot:activator="{ on, attrs }">-->
-<!--                  <v-btn-->
-<!--                      v-bind="attrs"-->
-<!--                      v-on="on"-->
-<!--                      icon-->
-<!--                      @click="openDeleteDialog(position)"-->
-<!--                  >-->
-<!--                    <v-icon-->
-<!--                        color="error"-->
-<!--                    >-->
-<!--                      mdi-trash-can-outline-->
-<!--                    </v-icon>-->
-<!--                  </v-btn>-->
-<!--                </template>-->
-<!--                <span>Удалить позицию</span>-->
-<!--              </v-tooltip>-->
-              <!--              <v-btn icon><v-icon color="error">mdi-trash-can-outline</v-icon></v-btn>-->
+              <v-tooltip bottom>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn
+                      v-bind="attrs"
+                      v-on="on"
+                      icon
+                      @click="openDeleteDialog(position)"
+                  >
+                    <v-icon
+                        color="error"
+                    >
+                      mdi-trash-can-outline
+                    </v-icon>
+                  </v-btn>
+                </template>
+                <span>Удалить позицию</span>
+              </v-tooltip>
+<!--          <v-btn icon><v-icon color="error">mdi-trash-can-outline</v-icon></v-btn>-->
             </div>
           </div>
         </div>
