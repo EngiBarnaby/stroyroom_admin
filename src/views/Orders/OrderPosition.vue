@@ -132,6 +132,7 @@ export default {
         await this.$http.delete(`marketplace/manager_order_positions/${this.currentOrderPosition.id}/`)
         this.positions = this.positions.filter(el => el.id !== this.currentOrderPosition.id)
         this.closeDeleteDialog()
+        this.$emit("refreshOrderPosition2")
       }
       catch (e) {
         console.log(e)
@@ -150,6 +151,7 @@ export default {
 
     async setItemCount(item){
       await this.$http.post(`marketplace/manager_order_positions/${item.id}/change_count/`, {"count" : item.count})
+      this.$emit("refreshOrderPosition2")
     },
 
     async fetchPositions(){

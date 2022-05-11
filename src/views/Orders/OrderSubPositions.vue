@@ -35,7 +35,7 @@
 
     <v-dialog v-model="shopProductsDialog" width="1500">
       <v-card class="pa-4">
-        <ShopPositions :subOrder.sync="currentSubOrder" :orderId="this.$route.params.id" @refresh="refresh" />
+        <ShopPositions :subOrder="currentSubOrder" :subOrders="subOrders" :orderId="this.$route.params.id" @refresh="refresh" />
       </v-card>
     </v-dialog>
 
@@ -93,7 +93,7 @@
     </v-dialog>
 
     <div class="scroll">
-      <v-expansion-panels v-for="subOrder in subOrders" :key="subOrder.id">
+      <v-expansion-panels  v-for="subOrder in subOrders" :key="subOrder.id">
         <v-expansion-panel>
           <v-expansion-panel-header>
             {{ subOrder._shop._company }} {{subOrder._shop.address}}
@@ -206,6 +206,7 @@ export default {
 
   data(){
     return {
+
       createSubOrderDialog : false,
       deleteSubOrderDialog : false,
       dialogApprove : false,
@@ -214,7 +215,8 @@ export default {
 
       shops : [],
       subOrders : [],
-      orderPositions : [],
+
+      allPositions : [],
 
       shopSelected : {},
       currentSuborder : {},
@@ -225,6 +227,11 @@ export default {
   },
 
   watch : {
+
+    allPositions(){
+      this.$emit("changePositions", this.allPositions)
+    },
+
     subOrders(){
       for (let i = 0; i < this.subOrders.length; i++) {
         if(this.subOrders[i].manager_approve === false){
@@ -270,7 +277,7 @@ export default {
     },
 
     async deleteSubOrder(){
-      await this.$http.delete(`marketplace/manager_sub_order/${this.currentSubOrder.id}/`)
+      await this.$http.delete(`marketplace/manager_sub_order/${this.currentSubOrder.id}й/`)
       this.subOrders = this.subOrders.filter(el => el.id !== this.currentSubOrder.id)
       this.$emit("refreshOrderPosition")
       this.closeDeleteSubOrderDialog()
@@ -303,10 +310,35 @@ export default {
       this.dialogApprove = true
     },
 
-    refresh(){
-      this.subOrders = []
+    refresh(data){
+      for(let i = 0; i < this.subOrders.length; i++){
+        if(this.subOrders[i].id === data.sub_order){
+          let similar = false
+          for(let j = 0; j < this.subOrders[i].positions.length; j++){
+            let position = this.subOrders[i].positions[j]
+            if(position.id === data.id){
+              this.subOrders[i].positions[j] = data
+              this.allPositions.map(el => {
+                if(el.id === data.id){
+                  return data
+                }
+                else{
+                  return el
+                }
+              })
+              similar = true
+            }
+          }
+          if(!similar){
+            this.subOrders[i].positions.push(data)
+            this.allPositions.push(data)
+          }
+          break
+        }
+      }
+
       this.$emit("refreshOrderPosition")
-      this.fetchSubOrders()
+
     },
 
     openShopProducts(subOrder){
@@ -329,7 +361,7 @@ export default {
     async deletePosition(){
       let subOrderPosition = this.currentItem.id
       await this.$http.delete(`marketplace/manager_sub_order_positions/${subOrderPosition}/`)
-      // await this.$http.post(`marketplace/manager_order_positions/delete_position/`, {order : this.$route.params.id, product : this.currentItem.product})
+      this.allPositions = this.allPositions.filter(el => el.id !== this.currentItem.id)
       this.$emit("refreshOrderPosition")
       this.subOrders = this.subOrders.filter(el => {
         if(el.id === this.currentSubOrder.id){
@@ -337,6 +369,7 @@ export default {
         }
         return el
       })
+      this.$emit("refreshOrderPosition")
       this.deleteDialog = false
     },
 
@@ -367,9 +400,9 @@ export default {
 
     async setItemCount(item){
       await this.$http.post(`marketplace/manager_sub_order_positions/${item.id}/change_count/`, {"count" : item.count})
-      await this.$http.post(`marketplace/manager_order_positions/change_count/`, {"count" : item.count,
-                                                                                          order : this.$route.params.id,
-                                                                                          product : item.product})
+      // await this.$http.post(`marketplace/manager_order_positions/change_count/`, {"count" : item.count,
+      //                                                                                     order : this.$route.params.id,
+      //                                                                                     product : item.product})
       this.$emit("refreshOrderPosition")
     },
 
@@ -387,6 +420,7 @@ export default {
     async fetchSubOrderPositions(subOrder){
       let {data} = await this.$http.get(`marketplace/manager_sub_order_positions/?sub_order=${subOrder.id}`)
       subOrder["positions"] = data
+      this.allPositions.push(...data)
       this.subOrders.push(subOrder)
     }
 

@@ -80,11 +80,19 @@
               <v-btn outlined
                      color="success"
                      @click="approveOrderDialog = true"
-                     :disabled="!allSubOrdersApproved"
+                     :disabled="!allSubOrdersApproved || missing.length !== 0"
               >
                 Подтвердить заказ
               </v-btn>
             </v-card-actions>
+
+            <h6 v-if="missing.length === 0">Состав заказа : <span style="color : green;">Заказ укомплектован</span></h6>
+            <div v-if="missing.length > 0">
+              <h6 style="color: red;">Некорректная комплектация</h6>
+              <p v-for="(item, index) in missing" :key="index">
+                {{item.name}}. Количество {{item.count}}.
+              </p>
+            </div>
           </v-card>
         </v-col>
 
@@ -107,12 +115,12 @@
           <v-tabs-items v-model="tab">
             <v-tab-item
             >
-              <OrderSubPosition @all_approved="changeStatus" @refreshOrderPosition="refreshOrderPosition"/>
+              <OrderSubPosition @all_approved="changeStatus" @changePositions="changePositions" @refreshOrderPosition="refreshOrderPosition"/>
             </v-tab-item>
 
             <v-tab-item
             >
-              <OrderPosition ref="orderPosition" />
+              <OrderPosition ref="orderPosition" @refreshOrderPosition2="refreshOrderPosition2" />
             </v-tab-item>
 
             <v-tab-item
@@ -139,6 +147,9 @@ export default {
 
   data(){
     return {
+      orderPositions : [],
+      allSubPosition : [],
+
 
       allSubOrdersApproved : false,
 
@@ -155,12 +166,69 @@ export default {
     }
   },
 
+  computed : {
+
+    missing(){
+      let missingItems = []
+      let similar = {}
+      for(let i = 0; i < this.orderPositions.length; i++){
+        let positionOrder = this.orderPositions[i]
+        for(let j = 0; j < this.allSubPosition.length; j++){
+          if(this.orderPositions[i].nomenclature.id === this.allSubPosition[j].nomenclature){
+            similar.name = this.orderPositions[i].nomenclature.name
+            if(similar.count){
+              similar.count += this.allSubPosition[j].count
+            }
+            else{
+              similar.count = this.allSubPosition[j].count
+            }
+          }
+        }
+
+        if(Object.keys(similar).length === 0){
+          missingItems.push({name : this.orderPositions[i].nomenclature.name, count : this.orderPositions[i].count})
+        }
+
+
+        if(Object.keys(similar).length !== 0 && similar.count !== positionOrder.count){
+          if(positionOrder.count - similar.count > 0){
+            similar.count = `Не хватает ${positionOrder.count - similar.count} шт`
+            missingItems.push(similar)
+          }
+          else if(positionOrder.count - similar.count < 0){
+            similar.count = `Больше на ${similar.count - positionOrder.count} шт`
+            missingItems.push(similar)
+          }
+        }
+
+        similar = {}
+      }
+      return missingItems
+
+    },
+
+  },
+
   methods : {
+
+    changePositions(subPositions){
+      this.allSubPosition = subPositions
+    },
+
+    async fetchOrderPosition(){
+      let { data } = await this.$http.get(`marketplace/manager_order_positions/?order=${this.$route.params.id}`)
+      this.orderPositions = data
+    },
 
     refreshOrderPosition(){
       if(this.$refs.orderPosition){
         this.$refs.orderPosition.fetchPositions()
       }
+      this.fetchOrderPosition()
+    },
+
+    refreshOrderPosition2(){
+      this.fetchOrderPosition()
     },
 
     async cancelOrder(){
@@ -186,6 +254,7 @@ export default {
 
   mounted(){
     this.fetchData()
+    this.fetchOrderPosition()
   }
 }
 </script>

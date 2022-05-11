@@ -71,6 +71,26 @@
     </div>
 
     <v-snackbar
+        v-model="productAlreadyIs"
+        :timeout="4000"
+        color="error"
+        outlined
+    >
+      Данная номенклатура уже есть в заказе по адресу {{productAlreadyIsText}}
+
+    </v-snackbar>
+
+    <v-snackbar
+        v-model="lessZeroError"
+        :timeout="2000"
+        color="error"
+        outlined
+    >
+      Количество должно быть больше нуля
+
+    </v-snackbar>
+
+    <v-snackbar
         v-model="successAdd"
         :timeout="2000"
         color="success"
@@ -88,11 +108,14 @@
 
 export default {
   name: "ShopPositions",
-  props : ["subOrder", "orderId"],
+  props : ["subOrder", "orderId", "subOrders"],
 
   data(){
     return {
+      productAlreadyIs : false,
+      productAlreadyIsText : "",
       successAdd : false,
+      lessZeroError : false,
 
       shopProducts : [],
 
@@ -107,29 +130,46 @@ export default {
 
     async addToSubOrder(product){
       if(product.currentCount > 0){
-        try{
-          await this.$http.post(`marketplace/manager_sub_order_positions/add_position_to_suborder/`, {
-            "product" : product.id,
-            "nomenclature" : product.nomenclature,
-            "sub_order" : this.subOrder.id,
-            "count" : product.currentCount
-          })
-
-          await this.$http.post(`marketplace/manager_order_positions/add_position_in_order/`, {
-            "product" : product.id,
-            "nomenclature" : product.nomenclature,
-            "order" : this.orderId,
-            "count" : product.currentCount,
-            "shop" : this.subOrder.shop,
-            "cost" : product.cost,
-          })
-
-          this.$emit("refresh")
-          this.successAdd = true
+        let similarProduct = false
+        for(let i = 0; i < this.subOrders.length; i++){
+          let positions = this.subOrders[i].positions
+          for(let j = 0; j < positions.length; j++){
+            if(positions[j].nomenclature === product.nomenclature && this.subOrder.id !== this.subOrders[i].id){
+              this.productAlreadyIsText = this.subOrders[i]._shop.address
+              this.productAlreadyIs = true
+              similarProduct = true
+            }
+          }
         }
-        catch (e){
-          console.log(e)
+        if(similarProduct === false){
+          try{
+            let { data } = await this.$http.post(`marketplace/manager_sub_order_positions/add_position_to_suborder/`, {
+              "product" : product.id,
+              "nomenclature" : product.nomenclature,
+              "sub_order" : this.subOrder.id,
+              "count" : product.currentCount
+            })
+
+            await this.$http.post(`marketplace/manager_order_positions/add_position_in_order/`, {
+              "product" : product.id,
+              "nomenclature" : product.nomenclature,
+              "order" : this.orderId,
+              "count" : product.currentCount,
+              "shop" : this.subOrder.shop,
+              "cost" : product.cost,
+            })
+
+            this.$emit("refresh", data)
+            this.successAdd = true
+          }
+          catch (e){
+            console.log(e)
+          }
         }
+
+      }
+      else{
+        this.lessZeroError = true
       }
     },
 
@@ -164,27 +204,34 @@ export default {
     },
 
     async fetchProducts(subOrder){
-      let {data} = await this.$http.get(`marketplace/nomenclature_manager_products/?shop=${this.subOrder._shop.id}&search=${this.search}&page=${this.page}`)
-      this.count = data.count
-      let results = data.results
-      results = results.map(function (el){
-        for(let i = 0; i < subOrder.positions.length; i++){
-          if(el.id === subOrder.positions[i].product){
-            el.currentCount = subOrder.positions[i].count
-            return el
+      if(Object.keys(subOrder).length !== 0){
+        let {data} = await this.$http.get(`marketplace/nomenclature_manager_products/?shop=${this.subOrder._shop.id}&search=${this.search}&page=${this.page}`)
+        this.count = data.count
+        let results = data.results
+        results = results.map(function (el){
+          for(let i = 0; i < subOrder.positions.length; i++){
+            if(el.id === subOrder.positions[i].product){
+              el.currentCount = subOrder.positions[i].count
+              return el
+            }
           }
-        }
           el.currentCount = 0
           return el
         })
-      this.shopProducts = results
+        this.shopProducts = results
+      }
     }
   },
 
   watch : {
     shop(){
       this.fetchProducts(this.subOrder)
+    },
+
+    subOrder(){
+      this.fetchProducts(this.subOrder)
     }
+
   },
 
   computed : {
